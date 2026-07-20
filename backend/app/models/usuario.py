@@ -1,0 +1,42 @@
+from datetime import datetime
+from sqlalchemy import String, DateTime, func
+from sqlalchemy.orm import Mapped, mapped_column
+from backend.app.db.base import Base
+#pylint: disable = E1102
+
+class Usuario(Base):
+    """Clase que representa la tabla usuarios de la base de datos"""
+
+    __tablename__ = "usuarios"
+
+
+    id: Mapped[int] = mapped_column(
+        primary_key=True
+        )
+
+    email: Mapped[str] = mapped_column(
+        String(255),
+        nullable=False,
+        unique=True
+        )
+
+    password_hash: Mapped[str] = mapped_column(
+        String(255),
+        nullable=False
+        )
+
+    rol: Mapped[str] = mapped_column(
+        String(20),
+        nullable=False
+        )
+
+    estado: Mapped[str] = mapped_column(
+        String(20),
+        nullable=False
+        )
+
+    fecha_creacion: Mapped[datetime] = mapped_column(
+        DateTime,
+        server_default=func.now(),
+        nullable=False
+        )
