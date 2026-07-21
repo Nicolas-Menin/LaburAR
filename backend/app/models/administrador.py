@@ -1,5 +1,5 @@
 from sqlalchemy import String,  ForeignKey
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from backend.app.db.base import Base
 
 
@@ -27,4 +27,8 @@ class Administrador(Base):
     foto_perfil: Mapped[str] = mapped_column(
         String(500),
         nullable=True
+    )
+
+    usuario: Mapped["Usuario"] = relationship(
+        back_populates= "administrador"
     )

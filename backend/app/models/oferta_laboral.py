@@ -1,7 +1,7 @@
 from datetime import datetime, time
 from decimal import Decimal
 from sqlalchemy import ForeignKey, DateTime,Text,func,String,Numeric, Time,UniqueConstraint
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from backend.app.db.base import Base
 
 #pylint: disable = E1102
@@ -113,4 +113,12 @@ class OfertaLaboral(Base):
     hora_fin: Mapped[time] = mapped_column(
         Time,
         nullable=False
+    )
+
+    empleador: Mapped["Empleador"] = relationship(
+        back_populates= "ofertas_laborales"
+    )
+
+    conexiones_laborales: Mapped[list["ConexionLaboral"]] = relationship(
+        back_populates= "conexiones_laborales"
     )

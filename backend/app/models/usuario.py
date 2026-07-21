@@ -1,6 +1,6 @@
 from datetime import datetime
 from sqlalchemy import String, DateTime, func
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from backend.app.db.base import Base
 #pylint: disable = E1102
 
@@ -40,3 +40,27 @@ class Usuario(Base):
         server_default=func.now(),
         nullable=False
         )
+
+    # RELACIONES ENTRE OBJETOS DE MODELO DE DATOS
+
+    postulante: Mapped["Postulante"] = relationship(
+        back_populates= "usuario"
+    )
+
+    empleador: Mapped["Empleador"] = relationship(
+        back_populates= "usuario"
+    )
+
+    administrador: Mapped["Administrador"] = relationship(
+        back_populates= "usuario"
+    )
+
+    reportes_realizados: Mapped[list["Reporte"]] = relationship(
+        back_populates= "usuario",
+        foreign_keys="Reporte.usuario_id"
+    )
+
+    reportes_recibidos: Mapped[list["Reporte"]] = relationship(
+        back_populates= "usuario_reportado",
+        foreign_keys="Reporte.usuario_reportado_id"
+    )

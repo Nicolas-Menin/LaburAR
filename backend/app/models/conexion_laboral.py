@@ -1,6 +1,6 @@
 from datetime import datetime
 from sqlalchemy import ForeignKey, DateTime,func,String,UniqueConstraint
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column,relationship
 from backend.app.db.base import Base
 
 #pylint: disable = E1102
@@ -56,3 +56,19 @@ class ConexionLaboral(Base):
         nullable=False
     )
 
+
+    postulante: Mapped["Postulante"] = relationship(
+        back_populates="conexiones_laborales"
+    )
+
+    empleador: Mapped["Empleador"] = relationship(
+        back_populates="conexiones_laborales"
+    )
+
+    oferta_laboral: Mapped["OfertaLaboral"] = relationship(
+        back_populates= "conexiones_laborales"
+    )
+
+    conversacion: Mapped["Conversacion"]= relationship(
+        back_populates= "conexion_laboral"
+    )

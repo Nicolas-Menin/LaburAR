@@ -1,5 +1,5 @@
 from sqlalchemy import String,  ForeignKey, Text
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from backend.app.db.base import Base
 
 
@@ -56,3 +56,28 @@ class Postulante(Base):
         String(50),
         nullable=False
     )
+
+    usuario: Mapped["Usuario"] = relationship(
+        back_populates= "postulante"
+    )
+
+    habilidades: Mapped[list["Habilidad"]] = relationship(
+        back_populates= "postulante"
+    )
+
+    estudios: Mapped[list["Estudio"]] = relationship(
+        back_populates= "postulante"
+    )
+
+    experiencias_laborales: Mapped[list["ExperienciaLaboral"]] = relationship(
+        back_populates= "postulante"
+    )
+
+    postulaciones: Mapped[list["Postulacion"]] = relationship(
+        back_populates= "postulante"
+    )
+
+    conexiones_laborales: Mapped[list["ConexionLaboral"]] = relationship(
+        back_populates= "postulante"
+    )
+

@@ -1,5 +1,5 @@
 from sqlalchemy import String,  ForeignKey, UniqueConstraint
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column,relationship
 from backend.app.db.base import Base
 
 
@@ -30,4 +30,8 @@ class Habilidad(Base):
     nombre: Mapped[str] = mapped_column(
         String(50),
         nullable=False
+    )
+
+    postulante: Mapped["Postulante"] = relationship(
+        back_populates="habilidades"
     )

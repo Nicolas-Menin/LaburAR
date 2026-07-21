@@ -1,6 +1,6 @@
 from datetime import datetime
 from sqlalchemy import ForeignKey, DateTime,Text,Boolean,func
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column,relationship
 from backend.app.db.base import Base
 
 #pylint: disable = E1102
@@ -41,4 +41,8 @@ class Mensaje(Base):
         DateTime,
         server_default= func.now(),
         nullable=False
+    )
+
+    conversacion: Mapped["Conversacion"] = relationship(
+        back_populates="mensajes"
     )

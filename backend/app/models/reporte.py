@@ -1,6 +1,6 @@
 from datetime import datetime
 from sqlalchemy import ForeignKey, DateTime,func,String,Text
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from backend.app.db.base import Base
 
 #pylint: disable = E1102
@@ -45,4 +45,14 @@ class Reporte(Base):
         DateTime,
         server_default=func.now(),
         nullable=False
+    )
+
+    usuario: Mapped["Usuario"] = relationship(
+        back_populates= "reportes_realizados",
+        foreign_keys= [usuario_id]
+    )
+
+    usuario_reportado: Mapped["Usuario"] = relationship(
+        back_populates= "reportes_recibidos",
+        foreign_keys= [usuario_reportado_id]
     )

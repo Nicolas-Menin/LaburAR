@@ -1,5 +1,5 @@
 from sqlalchemy import String,  ForeignKey, Text
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from backend.app.db.base import Base
 
 
@@ -49,4 +49,16 @@ class Empleador(Base):
     foto_perfil: Mapped[str] = mapped_column(
         String(500),
         nullable=True
+    )
+
+    usuario: Mapped["Usuario"] = relationship(
+        back_populates= "empleador"
+    )
+
+    ofertas_laborales: Mapped[list["OfertaLaboral"]] = relationship(
+        back_populates= "empleador"
+    )
+
+    conexiones_laborales: Mapped[list["ConexionLaboral"]] = relationship(
+        back_populates= "empleador"
     )

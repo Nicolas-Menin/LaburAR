@@ -1,6 +1,6 @@
 from datetime import date
 from sqlalchemy import String,  ForeignKey, Date,UniqueConstraint
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from backend.app.db.base import Base
 
 
@@ -57,4 +57,8 @@ class Estudio(Base):
     nivel: Mapped[str] = mapped_column(
         String(30),
         nullable=False
+    )
+
+    postulante: Mapped["Postulante"] = relationship(
+        back_populates= "estudios"
     )
