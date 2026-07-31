@@ -27,7 +27,7 @@ class Empleador(Base):
     )
 
     direccion: Mapped[str] = mapped_column(
-        String(200),
+        String(100),
         nullable=False
     )
 
@@ -43,7 +43,7 @@ class Empleador(Base):
 
     rubro: Mapped[str] = mapped_column(
         String(100),
-        nullable=False
+        nullable=True
     )
 
     foto_perfil: Mapped[str] = mapped_column(

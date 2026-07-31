@@ -70,5 +70,6 @@ class ConexionLaboral(Base):
     )
 
     conversacion: Mapped["Conversacion"]= relationship(
-        back_populates= "conexion_laboral"
+        back_populates= "conexion_laboral",
+        uselist=False
     )

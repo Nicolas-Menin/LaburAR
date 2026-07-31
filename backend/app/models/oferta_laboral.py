@@ -102,17 +102,17 @@ class OfertaLaboral(Base):
 
     dias_laborales: Mapped[str] = mapped_column(
         String(100),
-        nullable=False
+        nullable=True
     )
 
     hora_inicio: Mapped[time] = mapped_column(
         Time,
-        nullable=False
+        nullable=True
     )
 
     hora_fin: Mapped[time] = mapped_column(
         Time,
-        nullable=False
+        nullable=True
     )
 
     empleador: Mapped["Empleador"] = relationship(
@@ -120,5 +120,5 @@ class OfertaLaboral(Base):
     )
 
     conexiones_laborales: Mapped[list["ConexionLaboral"]] = relationship(
-        back_populates= "conexiones_laborales"
+        back_populates= "oferta_laboral"
     )
