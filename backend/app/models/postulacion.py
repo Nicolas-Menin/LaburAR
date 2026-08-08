@@ -36,6 +36,11 @@ class Postulacion(Base):
         nullable=False
     )
 
+    empleador_id: Mapped[int] = mapped_column(
+        ForeignKey("empleadores.id"),
+        nullable=False
+    )
+
     estado: Mapped[str] = mapped_column(
         String(20),
         nullable=False

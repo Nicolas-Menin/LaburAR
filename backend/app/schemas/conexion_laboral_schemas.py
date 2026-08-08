@@ -29,11 +29,11 @@ class ConexionLaboralPostulante(BaseModel):
 
     empleador_id: int
 
+    oferta_id: int
+
     nombre_empleador: str
 
     nombre_oferta: str
-
-    tipo: Literal["CONTACTO_DIRECTO","POSTULACION"]
 
     estado: Literal["PENDIENTE","ACEPTADA","RECHAZADA"]
 
@@ -47,11 +47,13 @@ class ConexionLaboralEmpleador(BaseModel):
 
     postulante_id: int
 
+    oferta_id: int
+
     nombre_postulante: str
 
-    nombre_oferta: str
+    apellido_postulante: str
 
-    tipo: Literal["CONTACTO_DIRECTO","POSTULACION"]
+    nombre_oferta: str
 
     estado: Literal["SOLICITUD_ENVIADA","ACEPTADA","RECHAZADA"]
 

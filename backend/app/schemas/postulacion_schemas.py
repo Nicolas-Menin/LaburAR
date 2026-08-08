@@ -10,6 +10,8 @@ class PostulacionPostulante(BaseModel):
 
     oferta_id: int
 
+    empleador_id: int
+
     titulo_oferta: str
 
     nombre_empleador: str
@@ -30,6 +32,8 @@ class PostulacionEmpleador(BaseModel):
     titulo_oferta: str
 
     nombre_postulante: str
+
+    apellido_postulante: str
 
     foto_postulante: HttpUrl | None
 

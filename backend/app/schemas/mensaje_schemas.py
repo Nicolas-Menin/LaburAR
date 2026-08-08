@@ -1,6 +1,6 @@
 from datetime import datetime
 from pydantic import BaseModel, Field
-
+from typing import List
 
 class MensajeCreate(BaseModel):
     """Contrato donde se crea un mensaje."""
@@ -21,5 +21,15 @@ class MensajeChat(BaseModel):
     contenido: str
 
     fecha_envio: datetime
+
+    leido: bool
+
+class MensajeList(BaseModel):
+    """Contrato que  muestra la lista de mensajes del chat"""
+    mensajes: List[MensajeChat]
+
+
+class MensajeUpdate(BaseModel):
+    """Contrato que actualiza el estado de visto de mensaje"""
 
     leido: bool

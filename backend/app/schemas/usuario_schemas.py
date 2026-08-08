@@ -17,6 +17,7 @@ class UsuarioCreate(BaseModel):
 
 class UsuarioLogin(BaseModel):
     """Contrato donde el usuario inicia sesion"""
+
     email: EmailStr = Field(
         description="Correo electronico de usuario"
     )
@@ -35,7 +36,6 @@ class TokenResponse(BaseModel):
     token_type: Literal["bearer"]
 
     rol: Literal["postulante","empleador","administrador"]
-
 
 class UsuarioAdministrador(BaseModel):
     """Contrato para visualizar y gestionar usuarios por administrador"""

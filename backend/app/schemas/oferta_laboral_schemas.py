@@ -41,6 +41,10 @@ class OfertaLaboralCreate(BaseModel):
         description="Sector donde pertenece la oferta laboral"
     )
 
+    estado: Literal["ACTIVA", "PAUSADA","CERRADA"] = Field(
+        description="Estado de la postulacion."
+    )
+
     salario_tipo: Literal["FIJO","RANGO",
                           "A_CONVENIR","NO_INFORMAR"] = Field(
                               description="Tipo de salario que va a tener la oferta laboral."
@@ -122,6 +126,8 @@ class OfertaLaboralSearch(BaseModel):
     """Contrato para visualizar ofertas laborales del empleador desded su perfil"""
 
     id: int
+
+    id_empleador: int
 
     titulo: str
 
