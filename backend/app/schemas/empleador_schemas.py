@@ -83,10 +83,6 @@ class EmpleadorUpdate(BaseModel):
         description="Rubro del negocio o empleador"
     )
 
-    foto_perfil: HttpUrl | None = Field(
-        default=None,
-        description="Foto de perfil de negocio o empleador"
-    )
 
 
 class EmpleadorPerfil(BaseModel):
@@ -134,3 +130,14 @@ class EmpleadorSearch(BaseModel):
         default=None,
         description="Foto de perfil de negocio o empleador"
     )
+
+class EmpleadorFiltro(BaseModel):
+    """Contrato de filtro de empleadores"""
+
+    busqueda: str | None
+
+    direccion: str | None
+
+    ubicacion: str | None
+
+    rubro: str | None

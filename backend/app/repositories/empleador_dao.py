@@ -25,11 +25,11 @@ class EmpleadorDAO:
         return empleador
 
 
-    def buscar_por_id(self,id_empleador: int):
+    def buscar_por_id(self,usuario_id: int):
         """Metodo para traer informacion del empleador mediante id"""
 
 
-        return self.db.query(Empleador).filter(Empleador.id == id_empleador).first()
+        return self.db.query(Empleador).filter(Empleador.usuario_id == usuario_id).first()
 
     def listar_empleadores(self,offset: int = 0, limit: int = 10):
         """Metodo para traer empleadores """
@@ -42,3 +42,33 @@ class EmpleadorDAO:
         ).offset(offset).limit(limit).all()
 
 
+    def filtrar_empleadores(
+        self,
+        busqueda: str | None = None,
+        direccion: str | None = None,
+        ubicacion: str | None = None,
+        rubro: str | None = None,
+        offset: int = 0,
+        limit: int = 10
+        ):
+        """Metodo para filtrar empleadores"""
+
+
+        query = self.db.query(Empleador)
+
+        if busqueda:
+            query = query.filter(Empleador.nombre_negocio.ilike(busqueda))
+
+        if direccion:
+            query = query.filter(Empleador.direccion.ilike(direccion))
+
+        if ubicacion:
+            query = query.filter(Empleador.ubicacion == ubicacion)
+
+        if rubro:
+            query = query.filter(Empleador.rubro.ilike(rubro))
+
+
+        return (
+            query.distinct().offset(offset).limit(limit).all()
+        )

@@ -1,9 +1,14 @@
-from datetime import datetime
-from pydantic import BaseModel, Field
 from typing import List
+from datetime import datetime
+from pydantic import BaseModel, Field,ConfigDict
+
 
 class MensajeCreate(BaseModel):
     """Contrato donde se crea un mensaje."""
+
+    remitente_id: int
+
+    conversacion_id: int
 
     contenido: str = Field(
         min_length=1,
@@ -13,6 +18,8 @@ class MensajeCreate(BaseModel):
 
 class MensajeChat(BaseModel):
     """Contrato que muestra un mensaje del chat"""
+    model_config = ConfigDict(from_attributes=True)
+
 
     id: int
 
@@ -26,10 +33,13 @@ class MensajeChat(BaseModel):
 
 class MensajeList(BaseModel):
     """Contrato que  muestra la lista de mensajes del chat"""
+
     mensajes: List[MensajeChat]
 
 
-class MensajeUpdate(BaseModel):
+class MensajeStateUpdate(BaseModel):
     """Contrato que actualiza el estado de visto de mensaje"""
 
-    leido: bool
+    id_conversacion: int
+
+    usuario_id: int

@@ -13,7 +13,7 @@ class EstudioCreate(BaseModel):
         description="Titulo de estudio del postulante."
     )
 
-    instituto: str = Field(
+    institucion: str = Field(
         min_length=2,
         max_length=100,
         description="Instituto donde estudio el postulante."
@@ -47,7 +47,7 @@ class EstudioUpdate(BaseModel):
         description="Titulo de estudio del postulante."
     )
 
-    instituto: str | None = Field(
+    institucion: str | None = Field(
         default=None,
         max_length=100,
         description="Instituto donde estudio el postulante."
@@ -77,9 +77,11 @@ class EstudioUpdate(BaseModel):
 class EstudioPerfil(BaseModel):
     """Contrato que muestra un estudio del postulante."""
 
+    id: int
+
     titulo: str
 
-    instituto: str
+    institucion: str
 
     fecha_inicio: date
 
@@ -89,4 +91,5 @@ class EstudioPerfil(BaseModel):
 
     nivel: Literal["PRIMARIO","SECUNDARIO",
                     "UNIVERSITARIO","TERCIARIO","CURSO"]
+
 

@@ -54,7 +54,7 @@ class Postulante(Base):
 
     disponibilidad: Mapped[str] = mapped_column(
         String(50),
-        nullable=False
+        nullable=True
     )
 
     usuario: Mapped["Usuario"] = relationship(

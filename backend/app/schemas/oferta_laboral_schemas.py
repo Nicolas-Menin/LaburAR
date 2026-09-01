@@ -14,13 +14,16 @@ class OfertaLaboralCreate(BaseModel):
         description="Titulo de la oferta laboral"
     )
 
+    empleador_id: int = Field(
+        description="Id del empleador"
+    )
+
     descripcion: str = Field(
         min_length=2,
         description="Descripcion de la oferta laboral"
     )
 
-    requisitos: str = Field(
-        min_length=1,
+    requisitos: list = Field(
         description="Requisitos de la oferta laboral"
     )
 
@@ -69,9 +72,87 @@ class OfertaLaboralCreate(BaseModel):
                        description="Turno que va a tener la oferta laboral."
                    )
 
-    dias_laborales: str | None = Field(
+    dias_laborales: list | None = Field(
         default=None,
+        description="Dias laborales de la oferta laboral"
+    )
+
+    hora_inicio: time | None = Field(
+        default=None,
+        description="Hora de inicio de la jornada laboral."
+    )
+
+    hora_fin: time | None = Field(
+        default=None,
+        description="Hora de finalización de la jornada laboral."
+    )
+
+
+class OfertaLaboralUpdate(BaseModel):
+    """Contrato para crear ofertas laborales"""
+
+    titulo: str | None= Field(
+        min_length=2,
         max_length=100,
+        description="Titulo de la oferta laboral"
+    )
+
+    descripcion: str | None = Field(
+        min_length=2,
+        description="Descripcion de la oferta laboral"
+    )
+
+    requisitos: list | None = Field(
+        description="Requisitos de la oferta laboral"
+    )
+
+    ubicacion: str | None = Field(
+        min_length=2,
+        description="Ubicacion en donde se encuentra la oferta laboral."
+    )
+
+    direccion: str | None = Field(
+        min_length=1,
+        max_length=100,
+        description="Direccion exacta en donde se encuentra la oferta laboral"
+    )
+
+    rubro: str | None = Field(
+        min_length=1,
+        max_length=50,
+        description="Sector donde pertenece la oferta laboral"
+    )
+
+    estado: Literal["ACTIVA", "PAUSADA","CERRADA"] = Field(
+        description="Estado de la postulacion."
+    )
+
+    salario_tipo: Literal["FIJO","RANGO",
+                          "A_CONVENIR","NO_INFORMAR"] | None = Field(
+                              description="Tipo de salario que va a tener la oferta laboral."
+                          )
+
+    salario_minimo: Decimal | None = Field(
+        default=None,
+        description="Salario minimo de la oferta laboral"
+    )
+
+    salario_maximo: Decimal | None = Field(
+        default=None,
+        description="Salario maximo de la oferta laboral"
+    )
+
+    jornada: Literal["COMPLETA","MEDIA_JORNADA","TEMPORAL","A_CONVENIR"] | None= Field(
+        description="Tipo de jornada que va a tener la oferta laboral"
+    )
+
+    turno: Literal["MAÑANA","TARDE",
+                   "NOCHE","A_CONVENIR"] | None = Field(
+                       description="Turno que va a tener la oferta laboral."
+                   )
+
+    dias_laborales: list | None = Field(
+        default=None,
         description="Dias laborales de la oferta laboral"
     )
 
@@ -114,7 +195,7 @@ class OfertaLaboralPerfil(BaseModel):
 
     turno: Literal["MAÑANA", "TARDE", "NOCHE", "A_CONVENIR"]
 
-    dias_laborales: str | None
+    dias_laborales: list | None
 
     hora_inicio: time | None
 
@@ -123,7 +204,7 @@ class OfertaLaboralPerfil(BaseModel):
     fecha_creacion: datetime
 
 class OfertaLaboralSearch(BaseModel):
-    """Contrato para visualizar ofertas laborales del empleador desded su perfil"""
+    """Contrato para visualizar ofertas laborales del empleador desde su vista previa de perfil"""
 
     id: int
 
@@ -141,7 +222,7 @@ class OfertaLaboralSearch(BaseModel):
 
 
 class OfertaLaboralEmpleador(BaseModel):
-    """Contrato para visualizar ofertas laborales del empleador desded su perfil"""
+    """Contrato para visualizar ofertas laborales del empleador desde su perfil"""
 
     id: int
 
@@ -151,4 +232,17 @@ class OfertaLaboralEmpleador(BaseModel):
 
     descripcion: str
 
+    fecha_creacion: datetime
 
+class OfertaLaboralFiltro(BaseModel):
+    """Contrato para filtrar ofertas laborales"""
+
+    busqueda: str | None = None
+
+    rubro: str | None = None
+
+    jornada: Literal["COMPLETA", "MEDIA_JORNADA", "TEMPORAL", "A_CONVENIR"] | None = None
+
+    turno:  Literal["MAÑANA", "TARDE", "NOCHE", "A_CONVENIR"] | None = None
+
+    dias_laborales: list[str] | None = None

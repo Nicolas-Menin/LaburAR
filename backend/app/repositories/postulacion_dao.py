@@ -1,4 +1,5 @@
 from sqlalchemy.orm import Session
+from sqlalchemy import or_
 from backend.app.models.postulacion import Postulacion
 from backend.app.models.oferta_laboral import OfertaLaboral
 from backend.app.models.empleador import Empleador
@@ -21,17 +22,25 @@ class PostulacionDAO:
 
         return postulacion
 
-    def listar_postulaciones_postulante(self,id_postulante: int):
-        """Metodo para listar las postulaciones del postulante"""
-        return (self.db.query(
-            Postulacion.oferta_id,
+    def filtrar_postulaciones_postulante(
+        self,
+        id_postulante: int,
+        busqueda: str | None = None,
+        offset: int = 0,
+        limit: int = 10
+        ):
+        """Metodo para filtrar las postulaciones del postulante"""
+
+        query = (self.db.query(
+            Postulacion.id,
             Postulacion.oferta_id,
             Empleador.id,
             OfertaLaboral.titulo,
             Empleador.nombre_negocio,
             Empleador.foto_perfil,
             Postulacion.estado,
-            Postulacion.fecha_postulacion
+            Postulacion.fecha_postulacion,
+            Postulacion.estado
             )
             .join(
                 Empleador,
@@ -42,29 +51,61 @@ class PostulacionDAO:
                 Postulacion.oferta_id == OfertaLaboral.id
             )
             .filter(Postulacion.postulante_id == id_postulante)
-            .all()
+
         )
 
-    def listar_postulaciones_empleador(self,id_empleador: int):
-        """Metodo para visualizar las postulaciones a ofertas laborales del empleador"""
-        return (self.db.query(
-            Postulacion.id,
-            Postulante.id,
-            OfertaLaboral.titulo,
-            Postulante.nombre,
-            Postulante.apellido,
-            Postulante.foto_perfil,
-            Postulacion.estado,
-            Postulacion.fecha_postulacion
+        if busqueda:
+            query = query.filter(
+                OfertaLaboral.titulo.ilike(f"%{busqueda}%")
+            )
+
+        return query.offset(offset).limit(limit).all()
+
+
+    def filtrar_postulaciones_oferta_laboral(
+        self,
+        id_empleador: int,
+        oferta_id: int | None = None,
+        busqueda: str | None = None,
+        offset: int = 0,
+        limit: int = 10
+        ):
+        """Metodo para listar las postulaciones de ofertas laborales de empleador"""
+
+
+        query = (self.db.query(
+                Postulacion.id,
+                Postulante.id,
+                OfertaLaboral.titulo,
+                Postulante.nombre,
+                Postulante.apellido,
+                Postulante.foto_perfil,
+                Postulacion.estado,
+                Postulacion.fecha_postulacion,
+                Postulacion.estado
+            )
+            .join(
+                Postulante,
+                Postulacion.postulante_id == Postulante.id
+            )
+            .join(
+                OfertaLaboral,
+                Postulacion.oferta_id == OfertaLaboral.id
+            )
+            .filter(Postulacion.empleador_id == id_empleador)
         )
-        .join(
-            Postulante,
-            Postulacion.postulante_id == Postulante.id
-        )
-        .join(
-            OfertaLaboral,
-            Postulacion.oferta_id == OfertaLaboral.id
-        )
-        .filter(Postulacion.empleador_id == id_empleador)
-        .all()
-        )
+
+        if busqueda:
+            query = query.filter(
+                or_(Postulante.nombre.ilike(f"%{busqueda}%"),
+                    Postulante.apellido.ilike(f"%{busqueda}%")
+                )
+            )
+
+        if oferta_id:
+            query = query.filter(
+                Postulacion.oferta_id == oferta_id
+            )
+
+
+        return query.offset(offset).limit(limit).all()

@@ -3,6 +3,19 @@ from typing import Literal
 from pydantic import BaseModel, HttpUrl
 
 
+class PostulacionCreate(BaseModel):
+    """Contrato para crear postulacion"""
+
+    oferta_id: int
+
+    postulante_id: int
+
+    empleador_id: int
+
+    estado: Literal["PENDIENTE", "ACEPTADA", "RECHAZADA"]
+
+
+
 class PostulacionPostulante(BaseModel):
     """Contrato para visualizar las postulaciones del postulante"""
 
@@ -40,3 +53,12 @@ class PostulacionEmpleador(BaseModel):
     estado: Literal["PENDIENTE", "ACEPTADA", "RECHAZADA"]
 
     fecha_postulacion: datetime
+
+class PostulacionFiltro(BaseModel):
+    """Contrato para filtrar postulaciones"""
+
+    usuario_id: int
+
+    busqueda: str | None = None
+
+    oferta_id: int | None = None

@@ -17,6 +17,12 @@ class ReporteCreate(BaseModel):
         description="Descripcion del porque se esta reportando"
     )
 
+class ReporteEstadoUpdate(BaseModel):
+    """Contrato para actualizar el estado del reporte"""
+
+    estado:  Literal["REVISADO","PENDIENTE","SANCIONADO"]
+
+    reporte_id: int
 
 
 class ReporteAdministrador(BaseModel):
@@ -48,3 +54,10 @@ class Reporte(BaseModel):
     estado: Literal["REVISADO","PENDIENTE","SANCIONADO"]
 
     foto_perfil: HttpUrl | None
+
+class ReporteFiltro(BaseModel):
+    """Contrato para filtrar reportes"""
+
+    estado: Literal["REVISADO","PENDIENTE","SANCIONADO"]
+
+    busqueda: str | None = None

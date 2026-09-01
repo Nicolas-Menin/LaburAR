@@ -83,16 +83,6 @@ class PostulanteUpdate(BaseModel):
         description="Descripcion personal del postulante"
     )
 
-    foto_perfil: HttpUrl | None = Field(
-        default=None,
-        description="Foto de perfil de postulante"
-    )
-
-    cv_url: HttpUrl | None = Field(
-        default=None,
-        description="Curriculum vitae de postulante"
-    )
-
     disponibilidad:  Literal["JORNADA_COMPLETA","MEDIA_JORNADA",
                             "FINES_SEMANA","A_CONVENIR"] | None = Field(
                                 default=None,
@@ -118,11 +108,6 @@ class PostulantePerfil(BaseModel):
     foto_perfil: HttpUrl | None = Field(
         default=None,
         description="Foto de perfil de postulante"
-    )
-
-    cv_url: HttpUrl | None = Field(
-        default=None,
-        description="Curriculum vitae de postulante"
     )
 
     habilidades: List[HabilidadPerfil]  =  []
@@ -156,3 +141,23 @@ class PostulanteSearch(BaseModel):
             default=None,
             description="Foto de perfil de postulante"
         )
+
+class PostulanteFiltro(BaseModel):
+    """Contrato de filtro de postulantes"""
+
+    busqueda: str | None
+
+    ubicacion: str | None
+
+    habilidades: List[str]  | None
+
+    estudios: str | None
+
+    experiencias_laborales: str | None
+
+    disponibilidad:  Literal[
+        "JORNADA_COMPLETA",
+        "MEDIA_JORNADA",
+        "FINES_SEMANA",
+        "A_CONVENIR"
+    ] | None

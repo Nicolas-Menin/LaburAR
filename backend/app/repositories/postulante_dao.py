@@ -1,6 +1,9 @@
 from sqlalchemy.orm import Session
+from sqlalchemy import or_
 from backend.app.models.postulante import Postulante
-
+from backend.app.models.estudio import Estudio
+from backend.app.models.experiencia_laboral import ExperienciaLaboral
+from backend.app.models.habilidad import Habilidad
 
 class PostulanteDAO:
 
@@ -26,24 +29,89 @@ class PostulanteDAO:
         self.db.commit()
         self.db.refresh(postulante)
 
-        raise postulante
+        return postulante
 
-    def buscar_por_id(self,id_postulante: int):
+    def buscar_por_id(self,usuario_id: int):
         """Metodo para traer informacion del postulante mediante id"""
 
         return self.db.query(Postulante).filter(
-            Postulante.id == id_postulante
+            Postulante.usuario_id == usuario_id
             ).first()
 
     def listar_postulantes(self,offset: int = 0, limit: int = 10):
         """"Metodo para traer postulantes"""
 
-        return self.db.query(
+        return (self.db.query(
             Postulante.id,
             Postulante.nombre,
             Postulante.apellido,
             Postulante.descripcion_personal,
             Postulante.foto_perfil
             ).offset(offset).limit(limit).all()
+        )
+
+    def filtrar_postulantes(
+            self,
+            busqueda: str | None = None,
+            ubicacion: str | None = None,
+            estudios: str | None = None,
+            habilidad: list[str] | None = None,
+            experiencia_laboral: str | None = None,
+            disponibilidad: str | None = None,
+            offset: int = 0,
+            limit: int = 10,
+        ):
+        """Metodo para filtrar postulantes"""
+
+        query = self.db.query(Postulante)
+
+        if busqueda:
+            query = query.filter(
+                or_(
+                    Postulante.nombre.ilike(f"%{busqueda}%"),
+                    Postulante.apellido.ilike(f"%{busqueda}%")
+                )
+            )
+
+        if ubicacion is not None:
+            query = query.filter(
+                Postulante.ubicacion.ilike(f"%{ubicacion}%")
+            )
+
+        if estudios is not None:
+            query = (
+                query
+                .join(Postulante.estudios)
+                .filter(
+                    Estudio.titulo.ilike(f"%{estudios}%")
+                )
+            )
+
+        if experiencia_laboral is not None:
+            query = (
+                query
+                .join(Postulante.experiencias_laborales)
+                .filter(
+                    ExperienciaLaboral.puesto.ilike(
+                        f"%{experiencia_laboral}%"
+                    )
+                )
+            )
+
+        if habilidad:
+            query = (
+                query
+                .join(Postulante.habilidades)
+                .filter(
+                    Habilidad.nombre.in_(habilidad)
+                )
+            )
+
+        if disponibilidad is not None:
+            query = (
+                query
+                .filter(Postulante.disponibilidad.like(f"{habilidad}"))
+            )
 
 
+        return query.distinct().offset(offset).limit(limit).all()

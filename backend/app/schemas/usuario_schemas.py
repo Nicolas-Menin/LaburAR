@@ -35,7 +35,7 @@ class TokenResponse(BaseModel):
 
     token_type: Literal["bearer"]
 
-    rol: Literal["postulante","empleador","administrador"]
+    rol: Literal["POSTULANTE","EMPLEADOR","ADMINISTRADOR"]
 
 class UsuarioAdministrador(BaseModel):
     """Contrato para visualizar y gestionar usuarios por administrador"""
@@ -47,3 +47,10 @@ class UsuarioAdministrador(BaseModel):
     estado: Literal["ACTIVO","DESACTIVADO","BANEADO"]
 
     foto_perfil: HttpUrl | None
+
+class UsuarioFiltro(BaseModel):
+    """Contrato para filtrar usuarios"""
+
+    rol: Literal["POSTULANTE","EMPLEADOR"]
+
+    busqueda: str | None = None

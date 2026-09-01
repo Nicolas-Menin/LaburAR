@@ -4,7 +4,7 @@ from pydantic import BaseModel
 
 
 
-class ConexionLaboralPerfil(BaseModel):
+class ConexionLaboralCreate(BaseModel):
     """Contrato que crea una conexión laboral."""
 
     id: int

@@ -34,3 +34,13 @@ class ExperienciaLaboralDAO:
         self.db.commit()
 
 
+    def buscar_por_id(self,experiencia_laboral_id: int,postulante_id :int):
+        """Metodo para traer experiencia laboral mediante id"""
+
+
+        return (
+            self.db.query(ExperienciaLaboral)
+            .filter(ExperienciaLaboral.id == experiencia_laboral_id)
+            .filter(ExperienciaLaboral.postulante_id == postulante_id )
+        ).first()
+

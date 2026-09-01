@@ -1,6 +1,5 @@
 from sqlalchemy.orm import Session
 from backend.app.models.mensaje import Mensaje
-from backend.app.models.conversacion import Conversacion
 
 class MensajeDAO:
 
@@ -19,14 +18,22 @@ class MensajeDAO:
     def listar_mensajes(self,id_conversacion: int):
         """Metodo para listar los mensajes"""
 
-        return (self.db.query(Conversacion).filter(
-            Mensaje.conversacion_id  == id_conversacion).all()
+        return (self.db.query(Mensaje)
+            .filter(
+            Mensaje.conversacion_id  == id_conversacion)
+            .order_by(Mensaje.fecha_envio.asc())
+            .all()
         )
 
-    def actualizar_mensaje(self, mensaje: Mensaje):
+    def actualizar_estados_mensajes(self):
         """Metodo para actualizar el estado de lectura del mensaje"""
 
         self.db.commit()
-        self.db.refresh(mensaje)
 
-        return mensaje
+
+
+    def buscar_por_id(self,id_mensaje: int):
+        """Metodo para buscar un mensaje por id"""
+
+
+        return self.db.query(Mensaje).filter(Mensaje.id == id_mensaje).first()

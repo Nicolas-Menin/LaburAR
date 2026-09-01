@@ -1,4 +1,5 @@
 from sqlalchemy.orm import Session
+from typing import Literal
 from backend.app.models.oferta_laboral import OfertaLaboral
 from backend.app.models.empleador import Empleador
 
@@ -54,3 +55,51 @@ class OfertaLaboralDAO:
             .all()
         )
 
+
+
+    def filtrar_ofertas_laborales(
+      self,
+      busqueda: str | None = None,
+      rubro: str | None = None,
+      jornada: Literal["COMPLETA", "MEDIA_JORNADA", "TEMPORAL", "A_CONVENIR"] | None = None,
+      turno:  Literal["MAÑANA", "TARDE", "NOCHE", "A_CONVENIR"] | None = None,
+      dias_laborales: list[str] | None = None,
+      offset: int = 0,
+      limit: int = 10
+    ):
+        """Metodo para filtrar ofertas laborales"""
+
+
+        query = self.db.query(
+            OfertaLaboral.id,
+            OfertaLaboral.empleador_id,
+            OfertaLaboral.titulo,
+            OfertaLaboral.descripcion
+        )
+
+        if busqueda:
+            query = query.filter(
+                OfertaLaboral.titulo.ilike(f"%{busqueda}%")
+            )
+
+        if rubro:
+            query = query.filter(
+                OfertaLaboral.rubro == rubro
+            )
+
+        if jornada:
+            query = query.filter(
+                OfertaLaboral.jornada == jornada
+            )
+
+        if turno:
+            query = query.filter(
+                OfertaLaboral.turno == turno
+            )
+
+        if dias_laborales:
+            query = query.filter(
+                OfertaLaboral.dias_laborales == dias_laborales
+            )
+
+        return query.offset(offset).limit(limit).all()

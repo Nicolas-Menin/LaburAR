@@ -1,4 +1,5 @@
 from sqlalchemy.orm import Session
+from sqlalchemy import or_
 from backend.app.models.conexion_laboral import ConexionLaboral
 from backend.app.models.postulante import Postulante
 from backend.app.models.empleador import Empleador
@@ -27,17 +28,24 @@ class ConexionLaboralDAO:
         return conexion_laboral
 
 
-    def listar_conexiones_laborales_postulante(self,id_postulante: int):
+    def listar_conexiones_laborales_postulante(
+        self,
+        id_postulante: int,
+        busqueda: str | None = None,
+        offset: int = 0,
+        limit: int = 10
+        ):
         """Metodo para traer conexiones laborales del postulante"""
 
-        return (self.db.query(
+        query = (self.db.query(
             ConexionLaboral.id,
             Empleador.id,
             OfertaLaboral.id,
             Empleador.nombre_negocio,
             OfertaLaboral.titulo,
             ConexionLaboral.estado,
-            ConexionLaboral.fecha_conexion
+            ConexionLaboral.fecha_conexion,
+            ConexionLaboral.estado
             )
             .join(
                 Empleador,
@@ -48,14 +56,26 @@ class ConexionLaboralDAO:
                 ConexionLaboral.oferta_id == OfertaLaboral.id
             )
             .filter(ConexionLaboral.postulante_id == id_postulante)
-            .all()
         )
 
-    def listar_conexiones_laborales_empleado(self,id_empleado: int):
+        if busqueda:
+            query = query.filter(
+                OfertaLaboral.titulo.ilike(f"%{busqueda}%")
+            )
+
+        return query.offset(offset).limit(limit).all()
+
+    def listar_conexiones_laborales_empleador(
+        self,
+        id_empleador: int,
+        busqueda: str | None = None,
+        offset: int = 0,
+        limit: int = 10
+        ):
         """Metodo para traer conexiones laborales del empleador"""
 
-        return (
-            self.db.query(
+
+        query =  (self.db.query(
                 ConexionLaboral.id,
                 Postulante.id,
                 OfertaLaboral.id,
@@ -72,6 +92,15 @@ class ConexionLaboralDAO:
                 OfertaLaboral,
                 ConexionLaboral.oferta_id == OfertaLaboral.id
             )
-            .filter(ConexionLaboral.empleador_id == id_empleado)
-            .all()
+            .filter(ConexionLaboral.empleador_id == id_empleador)
         )
+
+        if busqueda:
+            query = query.filter(
+                or_(
+                    Postulante.nombre.ilike(f"%{busqueda}%"),
+                    Postulante.apellido.ilike(f"%{busqueda}%")
+                )
+            )
+
+        return query.offset(offset).limit(limit).all()

@@ -36,3 +36,11 @@ class EstudiosDAO:
         self.db.commit()
 
 
+    def buscar_estudio_id(self,estudio_id: int,postulante_id: int):
+        """Metodo para buscar estudio por id"""
+
+        return (
+            self.db.query(Estudio)
+            .filter(Estudio.id == estudio_id)
+            .filter(Estudio.postulante_id == postulante_id)
+        ).first()

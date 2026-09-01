@@ -1,6 +1,6 @@
 from datetime import datetime, time
 from decimal import Decimal
-from sqlalchemy import ForeignKey, DateTime,Text,func,String,Numeric, Time,UniqueConstraint
+from sqlalchemy import ForeignKey, DateTime,Text,func,String,Numeric, Time,UniqueConstraint,ARRAY
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from backend.app.db.base import Base
 
@@ -43,8 +43,8 @@ class OfertaLaboral(Base):
         nullable=False
     )
 
-    requisitos: Mapped[str] = mapped_column(
-        Text,
+    requisitos: Mapped[list[str]] = mapped_column(
+        ARRAY(String),
         nullable=False
     )
 
@@ -100,8 +100,8 @@ class OfertaLaboral(Base):
         nullable=False
     )
 
-    dias_laborales: Mapped[str] = mapped_column(
-        String(100),
+    dias_laborales: Mapped[list[str]] = mapped_column(
+        ARRAY(String),
         nullable=True
     )
 
