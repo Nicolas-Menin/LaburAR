@@ -1,9 +1,11 @@
 from typing import Literal
 from backend.app.repositories.reporte_dao import ReporteDAO
 from backend.app.models.reporte import Reporte
-from backend.app.schemas.reporte_schemas import ReporteCreate
+from backend.app.schemas.reporte_schemas import ReporteCreate, ReporteFiltro
 
 class ReporteService:
+    """Service de Reporte"""
+
 
     def __init__(self,reporte_dao: ReporteDAO):
         self.reporte_dao = reporte_dao
@@ -43,11 +45,11 @@ class ReporteService:
 
     def filtrar_reportes(
         self,
-        estado: Literal["REVISADO","PENDIENTE","SANCIONADO"],
+        filtros: ReporteFiltro,
         busqueda: str | None = None,
         offset: int = 0,
         ):
         """Metodo para filtrar y buscar reportes"""
 
 
-        return self.reporte_dao.listar_reportes(estado,busqueda,offset)
+        return self.reporte_dao.listar_reportes(filtros.estado,busqueda,offset)

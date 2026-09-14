@@ -2,6 +2,7 @@ from sqlalchemy.orm import Session
 from backend.app.models.mensaje import Mensaje
 
 class MensajeDAO:
+    """Clase encargada del acceso a los datos de mensaje"""
 
     def __init__(self, db: Session):
         self.db = db
@@ -30,10 +31,29 @@ class MensajeDAO:
 
         self.db.commit()
 
+    def existe_mensajes_no_leidos(self, usuario_id: int):
+        """Metodo para verificar si hay mensajes no leidos"""
 
+        return (
+            self.db.query(
+                Mensaje,
+            )
+            .filter(Mensaje.leido == False)
+            .filter(Mensaje.remitente_id != usuario_id)
+        ).all()
 
     def buscar_por_id(self,id_mensaje: int):
         """Metodo para buscar un mensaje por id"""
 
 
         return self.db.query(Mensaje).filter(Mensaje.id == id_mensaje).first()
+
+    def contar_mensajes_no_leidos(self,usuario_id: int, conversacion_id: int):
+        """Metodo para contar mensajes no leidos de una conversacion."""
+
+        return (
+            self.db.query(Mensaje)
+            .filter(Mensaje.conversacion_id == conversacion_id)
+            .filter(Mensaje.remitente_id != usuario_id)
+            .filter(Mensaje.leido == False)
+        ).count()

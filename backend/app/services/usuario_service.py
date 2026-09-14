@@ -1,5 +1,5 @@
-from fastapi import HTTPException
 from datetime import datetime, timezone, timedelta
+from fastapi import HTTPException
 from backend.app.repositories.usuario_dao import UsuarioDAO
 from backend.app.repositories.postulante_dao import PostulanteDAO
 from backend.app.repositories.empleador_dao import EmpleadorDAO
@@ -13,7 +13,7 @@ from backend.app.services.token_service import TokenService
 from backend.app.services.brevo_service import BrevoService
 
 class UsuarioService:
-    """Service de usuario"""
+    """Service de Usuario"""
 
     def __init__(self,
                 usuario_dao: UsuarioDAO,
@@ -128,7 +128,7 @@ class UsuarioService:
 
         return {
             "access_token": token,
-            "token_type": "bearer",
+            "token_type": "Bearer",
             "rol": usuario.rol
         }
 
@@ -149,4 +149,10 @@ class UsuarioService:
         token = self.token_service.crear_token(payload)
 
         return self.brevo_service.enviar_email_recuperacion_contrasena(email,token)
+
+    def obtener_usuario_id(self,token: str):
+        """Metodo para buscar el id del usuario"""
+
+
+        return self.token_service.decodificar_token(token)
 

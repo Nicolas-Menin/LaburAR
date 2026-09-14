@@ -6,7 +6,7 @@ from backend.app.models.postulante import Postulante
 from backend.app.models.usuario import Usuario
 
 class AdministradorDAO:
-
+    """Clase encargada del acceso a los datos de administrador"""
 
     def __init__(self, db: Session):
         self.db = db
@@ -65,3 +65,23 @@ class AdministradorDAO:
 
 
         return query.offset(offset).limit(limit).all()
+
+    def desactivar_usuario(self,usuario_id:int):
+        """Metodo para desactivar usuario"""
+
+        usuario = self.db.query(Usuario).filter(Usuario.id == usuario_id).first()
+
+        usuario.estado = "DESACTIVADO"
+
+        self.db.commit()
+        self.db.refresh(usuario)
+
+    def banear_usuario(self,usuario_id:int):
+        """Metodo para banear usuario"""
+
+        usuario =  self.db.query(Usuario).filter(Usuario.id == usuario_id).first()
+
+        usuario.estado = "BANEADO"
+
+        self.db.commit()
+        self.db.refresh(usuario)

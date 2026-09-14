@@ -6,7 +6,7 @@ from backend.app.models.experiencia_laboral import ExperienciaLaboral
 from backend.app.models.habilidad import Habilidad
 
 class PostulanteDAO:
-
+    """Clase encargada del acceso a los datos de postulante"""
 
     def __init__(self,db: Session):
         self.db = db

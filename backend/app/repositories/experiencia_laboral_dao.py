@@ -3,6 +3,7 @@ from backend.app.models.experiencia_laboral import ExperienciaLaboral
 
 
 class ExperienciaLaboralDAO:
+    """Clase encargada del acceso a los datos de experiencia laboral de postulante"""
 
     def __init__(self, db: Session):
         self.db = db

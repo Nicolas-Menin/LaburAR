@@ -10,7 +10,7 @@ from backend.app.models.oferta_laboral import OfertaLaboral
 
 
 class EmpleadorService:
-    """Service del empleador"""
+    """Service de Empleador"""
 
     def __init__(self,
                 empleador_dao:  EmpleadorDAO,
@@ -80,11 +80,11 @@ class EmpleadorService:
         )
 
 
-    def filtrar_postulaciones_oferta_laboral(self,datos: PostulacionFiltro, offset: int = 0):
+    def filtrar_postulaciones_oferta_laboral(self,datos: PostulacionFiltro,usuario_id: int, offset: int = 0):
 
         """Metodo para filtrar postulaciones de oferta laboral"""
 
-        empleador = self.empleador_dao.buscar_por_id(datos.usuario_id)
+        empleador = self.empleador_dao.buscar_por_id(usuario_id)
 
         return self.postulacion_service.listar_postulaciones_empleador(
             empleador.id,
@@ -120,10 +120,18 @@ class EmpleadorService:
         return self.oferta_laboral_dao.crear_oferta_laboral(oferta_laboral)
 
 
-    def actualizar_oferta_laboral(self,datos: OfertaLaboralUpdate,oferta_laboral_id:int):
+    def actualizar_oferta_laboral(self,datos: OfertaLaboralUpdate,oferta_laboral_id:int,usuario_id: int):
         """Metodo para actualizar los datos de la oferta laboral"""
 
-        oferta_laboral = self.oferta_laboral_dao.buscar_por_id(oferta_laboral_id)
+        empleador = self.empleador_dao.buscar_por_id(usuario_id)
+
+        if not empleador:
+            raise HTTPException(404, "No existe este empleador")
+
+        oferta_laboral = self.oferta_laboral_dao.buscar_por_empleador(empleador.id,oferta_laboral_id)
+
+        if not oferta_laboral:
+            raise HTTPException(404,"No existe la oferta laboral de este empleador")
 
         if datos.titulo:
             oferta_laboral.titulo = datos.titulo

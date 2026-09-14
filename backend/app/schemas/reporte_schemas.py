@@ -22,7 +22,6 @@ class ReporteEstadoUpdate(BaseModel):
 
     estado:  Literal["REVISADO","PENDIENTE","SANCIONADO"]
 
-    reporte_id: int
 
 
 class ReporteAdministrador(BaseModel):
@@ -60,4 +59,3 @@ class ReporteFiltro(BaseModel):
 
     estado: Literal["REVISADO","PENDIENTE","SANCIONADO"]
 
-    busqueda: str | None = None

@@ -5,6 +5,7 @@ from backend.app.models.empleador import Empleador
 
 
 class OfertaLaboralDAO:
+    """Clase encargada del acceso a los datos de oferta laboral"""
 
     def __init__(self,db: Session):
         self.db = db
@@ -35,6 +36,13 @@ class OfertaLaboralDAO:
         return self.db.query(OfertaLaboral).filter(
             OfertaLaboral.id == id_oferta_laboral
         ).first()
+
+    def buscar_por_empleador(self,empleador_id: int,oferta_id:int):
+        """Metodo para traer informacion de oferta laboral mediante id"""
+
+        return self.db.query(OfertaLaboral).filter(
+            OfertaLaboral.id == oferta_id
+        ).filter(OfertaLaboral.empleador_id == empleador_id).first()
 
     def listar_ofertas_laborales(self,offset: int = 0, limit: int = 10):
         """Metodo para traer ofertas laboraless"""

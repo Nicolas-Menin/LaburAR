@@ -237,7 +237,6 @@ class OfertaLaboralEmpleador(BaseModel):
 class OfertaLaboralFiltro(BaseModel):
     """Contrato para filtrar ofertas laborales"""
 
-    busqueda: str | None = None
 
     rubro: str | None = None
 

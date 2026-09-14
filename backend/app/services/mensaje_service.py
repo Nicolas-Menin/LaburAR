@@ -4,6 +4,8 @@ from backend.app.models.mensaje import Mensaje
 
 
 class MensajeService:
+    """Service de Mensaje"""
+
 
     def __init__(self,mensaje_dao: MensajeDAO):
         self.mensaje_dao = mensaje_dao
@@ -21,10 +23,10 @@ class MensajeService:
 
         return self.mensaje_dao.crear_mensaje(mensaje)
 
-    def listar_mensajes(self,id_conversacion: int):
+    def listar_mensajes(self,conversacion_id: int):
         """Metodo para listar los mensajes de un chat"""
 
-        mensajes =  self.mensaje_dao.listar_mensajes(id_conversacion)
+        mensajes =  self.mensaje_dao.listar_mensajes(conversacion_id)
 
         return {
             "mensajes": mensajes
@@ -41,3 +43,12 @@ class MensajeService:
                 mensaje.leido = True
 
         return self.mensaje_dao.actualizar_estados_mensajes()
+
+    def existe_mensajes_no_leidos(self,usuario_id:int):
+        """Metodo para verificar si el usuario tiene mensajes no leidos"""
+
+        mensajes = self.mensaje_dao.existe_mensajes_no_leidos(usuario_id)
+
+        return {
+            "cantidad_mensajes_no_leidos": len(mensajes),
+        }

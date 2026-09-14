@@ -3,6 +3,7 @@ from backend.app.models.estudio import Estudio
 
 
 class EstudiosDAO:
+    """Clase encargada del acceso a los datos de estudio de postulante"""
 
     def __init__(self, db: Session):
         self.db = db

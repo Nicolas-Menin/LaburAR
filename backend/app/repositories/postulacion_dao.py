@@ -7,7 +7,7 @@ from backend.app.models.postulante import Postulante
 
 
 class PostulacionDAO:
-
+    """Clase encargada del acceso a los datos de postulacion"""
 
     def __init__(self,db: Session):
         self.db = db
@@ -74,8 +74,9 @@ class PostulacionDAO:
 
 
         query = (self.db.query(
-                Postulacion.id,
-                Postulante.id,
+                Postulacion.id.label("postulacion_id"),
+                Postulante.id.label("postulante_id"),
+                OfertaLaboral.id.label("oferta_id"),
                 OfertaLaboral.titulo,
                 Postulante.nombre,
                 Postulante.apellido,
@@ -109,3 +110,23 @@ class PostulacionDAO:
 
 
         return query.offset(offset).limit(limit).all()
+
+
+    def buscar_postulacion(self,postulante_id: int,oferta_id: int):
+        """Metodo para buscar postulacion de postulante"""
+
+
+        return (self.db.query(
+            Postulacion
+            )
+            .filter(Postulacion.postulante_id == postulante_id)
+            .filter(Postulacion.oferta_id == oferta_id)
+        ).first()
+
+    def actualizar_postulacion(self,postulacion: Postulacion):
+        """Metodo para actualizar postulacion de postulante"""
+
+        self.db.commit()
+        self.db.refresh(postulacion)
+
+        return postulacion

@@ -28,6 +28,19 @@ class UsuarioLogin(BaseModel):
         description="Contraseña del usuario"
     )
 
+class UsuarioEmail(BaseModel):
+    """Contrato para restablecer contraseña mediante email"""
+
+    email: EmailStr
+
+class UsuarioResetPassword(BaseModel):
+    """Contrato para restablecer contraseña"""
+
+    password: int = Field(
+         min_length=8,
+         max_length=100,
+         description="Nueva contraseña de usuario"
+    )
 
 class TokenResponse(BaseModel):
     """Contrato de respuesta de token"""
@@ -53,4 +66,3 @@ class UsuarioFiltro(BaseModel):
 
     rol: Literal["POSTULANTE","EMPLEADOR"]
 
-    busqueda: str | None = None

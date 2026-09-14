@@ -5,7 +5,7 @@ import cloudinary.uploader
 
 
 class CloudinaryService:
-
+    """Service de Cloudinary"""
 
     def actualizar_foto_perfil(self, archivo,id_usuario: int):
         """Metodo para actualizar foto de perfil"""

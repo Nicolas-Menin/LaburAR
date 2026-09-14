@@ -1,4 +1,4 @@
-from sqlalchemy import ForeignKey
+from sqlalchemy import ForeignKey, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column,relationship
 from backend.app.db.base import Base
 
@@ -7,6 +7,13 @@ from backend.app.db.base import Base
 class Conversacion(Base):
 
     __tablename__ = "conversaciones"
+
+    __table_args__ = (
+        UniqueConstraint(
+            "conexion_laboral_id",
+            name="uq_conexion_laboral"
+        ),
+    )
 
     id: Mapped[int] = mapped_column(
         primary_key=True

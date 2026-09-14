@@ -4,25 +4,24 @@ from backend.app.schemas.oferta_laboral_schemas import OfertaLaboralFiltro
 
 
 class OfertaLaboralService:
-
+    """Service de Oferta Laboral"""
 
     def __init__(self,oferta_laboral_dao: OfertaLaboralDAO):
         self.oferta_laboral_dao = oferta_laboral_dao
 
 
 
-    def buscar_ofertas_laborales(self, datos:OfertaLaboralFiltro):
+    def buscar_ofertas_laborales(self,filtros:OfertaLaboralFiltro,busqueda: str | None = None, ):
         """Metodo para buscar ofertas laborales"""
 
         return self.oferta_laboral_dao.filtrar_ofertas_laborales(
-            busqueda= datos.busqueda
-                if datos.busqueda else None,
-            rubro = datos.rubro
-                if datos.rubro else None,
-            jornada = datos.jornada
-                if datos.jornada else None,
-            turno = datos.turno
-                if datos.turno else None,
-            dias_laborales = datos.dias_laborales
-                if datos.dias_laborales else None
+            busqueda= busqueda,
+            rubro = filtros.rubro
+                if filtros.rubro else None,
+            jornada = filtros.jornada
+                if filtros.jornada else None,
+            turno = filtros.turno
+                if filtros.turno else None,
+            dias_laborales = filtros.dias_laborales
+                if filtros.dias_laborales else None
         )

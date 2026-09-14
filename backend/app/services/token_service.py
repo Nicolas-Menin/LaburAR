@@ -1,11 +1,11 @@
+from datetime import datetime,timezone
 from jose import jwt
 from fastapi import HTTPException
 from backend.app.core.config import JWT_KEY
-from datetime import datetime,timezone
 
 
 class TokenService:
-
+    """Service de Token"""
 
 
     def crear_token(self,payload: dict):
@@ -28,3 +28,13 @@ class TokenService:
         if payload["exp"] < datetime.now(timezone.utc):
             raise HTTPException(408, "Expiro el tiempo de autenticacion")
 
+
+        return payload
+
+
+    def decodificar_token(self,token: str):
+        """Metodo para decodifciar el token"""
+
+        usuario = jwt.decode(token,JWT_KEY,algorithms="HS256")
+
+        return usuario["user"]

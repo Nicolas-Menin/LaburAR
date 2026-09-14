@@ -6,11 +6,12 @@ from backend.app.models.empleador import Empleador
 from backend.app.models.oferta_laboral import OfertaLaboral
 
 class ConexionLaboralDAO:
+    """Clase encargada del acceso a los datos de conexion laboral"""
 
     def __init__(self,db: Session):
         self.db = db
 
-    def crear_conexion_laboral_postulante(self, conexion_laboral: ConexionLaboral):
+    def crear_conexion_laboral(self, conexion_laboral: ConexionLaboral):
         """Metodo para crear conexiones laborales"""
 
         self.db.add(conexion_laboral)
@@ -104,3 +105,39 @@ class ConexionLaboralDAO:
             )
 
         return query.offset(offset).limit(limit).all()
+
+
+    def buscar_por_id(self,conexion_laboral_id:int):
+        """Metodo para buscar conexion laboral mediante id"""
+
+
+        return (self.db.query(ConexionLaboral)
+                .filter(ConexionLaboral.id == conexion_laboral_id)
+                .first())
+
+
+    def buscar_conexion_laboral_postulante(self,postulante_id:int, oferta_id:int):
+        """Metodo para buscar conexion laboral de postulante"""
+
+
+        return (self.db.query(ConexionLaboral)
+                .filter(ConexionLaboral.postulante_id == postulante_id)
+                .filter(ConexionLaboral.oferta_id== oferta_id)
+                .first())
+
+    def buscar_conexion_laboral(
+        self,
+        postulante_id: int,
+        empleador_id:int,
+        oferta_id: int | None = None,
+        ):
+        """Metodo para buscar conexion laboral"""
+
+        query =  (self.db.query(ConexionLaboral)
+                .filter(ConexionLaboral.postulante_id == postulante_id)
+                .filter(ConexionLaboral.empleador_id == empleador_id)
+        )
+        if oferta_id is not None:
+            query = query.filter(ConexionLaboral.oferta_id == oferta_id)
+
+        return query.first()

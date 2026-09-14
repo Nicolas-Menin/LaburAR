@@ -16,7 +16,6 @@ class ConexionLaboral(Base):
             "postulante_id",
             "empleador_id",
             "oferta_id",
-            "tipo",
             name="uq_postulante_empleador_oferta"
         ),
     )
@@ -37,11 +36,6 @@ class ConexionLaboral(Base):
 
     oferta_id: Mapped[int] = mapped_column(
         ForeignKey("ofertas_laborales.id"),
-        nullable=False
-    )
-
-    tipo: Mapped[str] = mapped_column(
-        String(20),
         nullable=False
     )
 

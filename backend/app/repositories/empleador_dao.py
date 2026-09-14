@@ -3,6 +3,7 @@ from backend.app.models.empleador import Empleador
 
 
 class EmpleadorDAO:
+    """Clase encargada del acceso a los datos de empleador"""
 
     def __init__(self, db: Session):
         self.db = db

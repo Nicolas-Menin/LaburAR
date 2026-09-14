@@ -1,9 +1,9 @@
 from brevo import Brevo
 from brevo import SendTransacEmailRequestToItem, SendTransacEmailRequestSender
-
+from backend.app.core.config import API_URL
 
 class BrevoService:
-
+    """Service de Brevo"""
 
     def __init__(self,client: Brevo,sender: str):
         self.client = client
@@ -18,7 +18,7 @@ class BrevoService:
         ):
         """Metodo para enviar email de recuperacion de contraseña"""
 
-        url =f"http://localhost:8550/restablecer-contrasena?token={token}"
+        url =f"{API_URL}0/resetear-contraseña?token={token}"
 
         return self.client.transactional_emails.send_transac_email(
                 subject="Restablecimiento de contraseña",

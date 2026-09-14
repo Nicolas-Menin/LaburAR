@@ -4,6 +4,7 @@ from backend.app.models.habilidad import Habilidad
 
 
 class HabilidadDAO:
+    """Clase encargada del acceso a los datos de habilidad de postulante"""
 
     def __init__(self,db: Session):
         self.db = db

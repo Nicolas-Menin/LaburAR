@@ -4,22 +4,7 @@ from pydantic import BaseModel
 
 
 
-class ConexionLaboralCreate(BaseModel):
-    """Contrato que crea una conexión laboral."""
 
-    id: int
-
-    postulante_id: int
-
-    empleador_id: int
-
-    oferta_id: int
-
-    tipo: Literal["CONTACTO_DIRECTO","POSTULACION"]
-
-    estado: Literal["SOLICITUD_ENVIADA","ACEPTADA","RECHAZADA"]
-
-    fecha_conexion: datetime
 
 
 class ConexionLaboralPostulante(BaseModel):
@@ -55,6 +40,6 @@ class ConexionLaboralEmpleador(BaseModel):
 
     nombre_oferta: str
 
-    estado: Literal["SOLICITUD_ENVIADA","ACEPTADA","RECHAZADA"]
+    estado: Literal["PENDIENTE","ACEPTADA","RECHAZADA"]
 
     fecha_conexion: datetime

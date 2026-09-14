@@ -15,6 +15,8 @@ from backend.app.services.postulacion_service import PostulacionService
 from backend.app.schemas.postulacion_schemas import PostulacionFiltro
 
 class PostulanteService:
+    """Service de Postulante"""
+
 
     def __init__(self,
                 postulante_dao: PostulanteDAO,
@@ -81,7 +83,7 @@ class PostulanteService:
         return self.postulante_dao.buscar_por_id(usuario_id)
 
 
-    def buscar_postulantes(self,filtro:PostulanteFiltro):
+    def buscar_postulantes(self,filtro:PostulanteFiltro,offset: int = 0):
         """Metodo para filtrar postulantes"""
 
         return (self.postulante_dao.filtrar_postulantes(
@@ -96,7 +98,8 @@ class PostulanteService:
             experiencias_laborales = filtro.experiencias_laborales
                 if filtro.experiencias_laborales else None,
             disponibilidad = filtro.disponibilidad
-                if filtro.disponibilidad else None
+                if filtro.disponibilidad else None,
+            offset=offset
             )
         )
 
@@ -155,12 +158,19 @@ class PostulanteService:
 
         return self.estudio_dao.actualizar_estudio(estudio)
 
-    def elimiar_estudio(self, estudio_id: int):
+    def eliminar_estudio(self, estudio_id: int,usuario_id:int):
         """Metodo para eliminar estudio del postulante"""
 
-        return self.elimiar_estudio(estudio_id)
+        postulante = self.postulante_dao.buscar_por_id(usuario_id)
 
-    def crear_experiencia_laboral(self, datos: ExperienciaLaboralCreate,usuario_id):
+        if not postulante:
+            raise HTTPException(404,"Postulante no encontrado")
+
+        estudio = self.estudio_dao.buscar_estudio_id(estudio_id,postulante.id)
+
+        return self.estudio_dao.eliminar_estudio(estudio)
+
+    def crear_experiencia_laboral(self, datos: ExperienciaLaboralCreate,usuario_id: int):
         """Metodo para crear experiencia laboral del postulante"""
 
         postulante = self.postulante_dao.buscar_por_id(usuario_id)
@@ -228,6 +238,9 @@ class PostulanteService:
 
         postulante = self.postulante_dao.buscar_por_id(usuario_id)
 
+        if not postulante:
+            raise HTTPException(404,"Postulante no encontrado")
+
         experiencia_laboral = self.experiencia_laboral_dao.buscar_por_id(
             experiencia_laboral_id,postulante.id)
 
@@ -249,7 +262,7 @@ class PostulanteService:
 
     def eliminar_habilidad(
         self,
-        experiencia_laboral_id: int,
+        habilidad_id: int,
         usuario_id: int
         ):
         """Metodo para eliminar una habilidad del postulante"""
@@ -257,15 +270,16 @@ class PostulanteService:
         postulante = self.postulante_dao.buscar_por_id(usuario_id)
 
         experiencia_laboral = self.experiencia_laboral_dao.buscar_por_id(
-            experiencia_laboral_id,postulante.id)
+            habilidad_id,postulante.id)
 
 
         return self.experiencia_laboral_dao.eliminar_experiencia_laboral(experiencia_laboral)
 
 
-    def filtrar_postulaciones(self,datos: PostulacionFiltro ,offset: int):
+
+    def filtrar_postulaciones(self,datos: PostulacionFiltro,usuario_id:int ,offset: int):
         """Metodo para mostrar las postulaciones del postulante"""
 
-        postulante = self.postulante_dao.buscar_por_id(datos.usuario_id)
+        postulante = self.postulante_dao.buscar_por_id(usuario_id)
 
         return self.postulacion_service.listar_postulaciones_postulante(postulante.id,datos.busqueda,offset)

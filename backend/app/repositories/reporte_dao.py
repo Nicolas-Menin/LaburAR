@@ -5,6 +5,7 @@ from backend.app.models.reporte import Reporte
 
 
 class ReporteDAO:
+    """Clase encargada del acceso a los datos de reporte"""
 
     def __init__(self,db: Session):
         self.db = db
