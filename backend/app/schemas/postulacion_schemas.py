@@ -42,6 +42,8 @@ class PostulacionEmpleador(BaseModel):
 
     postulante_id: int
 
+    oferta_id: int
+
     titulo_oferta: str
 
     nombre_postulante: str
@@ -54,9 +56,3 @@ class PostulacionEmpleador(BaseModel):
 
     fecha_postulacion: datetime
 
-class PostulacionFiltro(BaseModel):
-    """Contrato para filtrar postulaciones"""
-
-    busqueda: str | None = None
-
-    oferta_id: int | None = None

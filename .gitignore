@@ -1,4 +1,4 @@
-# Python-generated files
+# Archivos que genera python
 __pycache__/
 *.py[oc]
 build/
@@ -6,6 +6,12 @@ dist/
 wheels/
 *.egg-info
 
-# Virtual environments
+# Entornos virtuales
 .venv
 .env
+
+# Pytest
+.pytest_cache/
+
+#Scripts lanzador
+/scripts/

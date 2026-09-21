@@ -1,7 +1,10 @@
 from typing import Literal
 from sqlalchemy.orm import Session
+from sqlalchemy import func
 from backend.app.models.reporte import Reporte
-
+from backend.app.models.usuario import Usuario
+from backend.app.models.postulante import Postulante
+from backend.app.models.empleador import Empleador
 
 
 class ReporteDAO:
@@ -48,12 +51,23 @@ class ReporteDAO:
 
         query = (
             self.db.query(
-                Reporte.id,
-                Reporte.motivo,
-                Reporte.descripcion,
-                Reporte.estado,
-                Reporte.fecha_creacion
+                Reporte.id.label("id"),
+                Reporte.motivo.label("motivo"),
+                Reporte.descripcion.label("descripcion"),
+                Usuario.rol.label("tipo_usuario"),
+                Reporte.estado.label("estado"),
+                func.coalesce(
+                    Empleador.foto_perfil,
+                    Postulante.foto_perfil
+                ).label("foto_perfil"),
+                Reporte.fecha_creacion.label("fecha_creacion")
             )
+            .join(Usuario,
+                  Reporte.usuario_reportado_id == Usuario.id)
+            .outerjoin(Empleador,
+                  Usuario.id == Empleador.usuario_id)
+            .outerjoin(Postulante,
+                  Usuario.id == Postulante.usuario_id)
             .filter(
                 Reporte.estado == estado
             )
@@ -61,7 +75,7 @@ class ReporteDAO:
 
         if busqueda:
             query = query.filter(
-                Reporte.motivo.ilike(f"${busqueda}%")
+                Reporte.motivo.ilike(f"{busqueda}%")
             )
 
         return query.offset(offset).limit(limit).all()

@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Literal
 from pydantic import BaseModel, Field, HttpUrl
 
@@ -17,13 +18,6 @@ class ReporteCreate(BaseModel):
         description="Descripcion del porque se esta reportando"
     )
 
-class ReporteEstadoUpdate(BaseModel):
-    """Contrato para actualizar el estado del reporte"""
-
-    estado:  Literal["REVISADO","PENDIENTE","SANCIONADO"]
-
-
-
 class ReporteAdministrador(BaseModel):
     """Contrato para que el administrado visualice y gestione los reportes."""
 
@@ -37,7 +31,9 @@ class ReporteAdministrador(BaseModel):
 
     estado: Literal["REVISADO","PENDIENTE","SANCIONADO"]
 
-    foto_perfil: HttpUrl | None
+    foto_perfil: HttpUrl | None = None
+
+    fecha_creacion:datetime
 
 class Reporte(BaseModel):
     """Contrato para que el administrado visualice y gestione los reportes."""
@@ -52,10 +48,5 @@ class Reporte(BaseModel):
 
     estado: Literal["REVISADO","PENDIENTE","SANCIONADO"]
 
-    foto_perfil: HttpUrl | None
-
-class ReporteFiltro(BaseModel):
-    """Contrato para filtrar reportes"""
-
-    estado: Literal["REVISADO","PENDIENTE","SANCIONADO"]
+    foto_perfil: HttpUrl | None = None
 

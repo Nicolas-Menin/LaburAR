@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
-from backend.app.schemas.postulante_schemas import PostulanteCreate
-from backend.app.schemas.empleador_schemas import EmpleadorCreate
+from backend.app.schemas.postulante_schemas import RegistroPostulante
+from backend.app.schemas.empleador_schemas import RegistroEmpleador
 from backend.app.services.usuario_service import UsuarioService
 from backend.app.schemas.usuario_schemas import UsuarioLogin, UsuarioEmail,TokenResponse
 from backend.app.dependencies.usuario import obtener_usuario_service
@@ -11,7 +11,7 @@ autenticacion_router = APIRouter(prefix="/autenticacion",tags=["Autenticacion"])
 
 @autenticacion_router.post("/registrar-postulante")
 async def registrar_postulante(
-    postulante: PostulanteCreate,
+    postulante: RegistroPostulante,
     usuario_service: UsuarioService = Depends(obtener_usuario_service)
     ):
     """Funcion para registrar postulante"""
@@ -21,7 +21,7 @@ async def registrar_postulante(
 
 @autenticacion_router.post("/registrar-empleador")
 async def registrar_empleador(
-    empleador: EmpleadorCreate,
+    empleador: RegistroEmpleador,
     usuario_service: UsuarioService = Depends(obtener_usuario_service)
     ):
     """Funcion para registrar empleador"""

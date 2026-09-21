@@ -55,8 +55,8 @@ class PostulanteDAO:
             busqueda: str | None = None,
             ubicacion: str | None = None,
             estudios: str | None = None,
-            habilidad: list[str] | None = None,
-            experiencia_laboral: str | None = None,
+            habilidades: list[str] | None = None,
+            experiencias_laborales: str | None = None,
             disponibilidad: str | None = None,
             offset: int = 0,
             limit: int = 10,
@@ -65,7 +65,7 @@ class PostulanteDAO:
 
         query = self.db.query(Postulante)
 
-        if busqueda:
+        if busqueda is not None:
             query = query.filter(
                 or_(
                     Postulante.nombre.ilike(f"%{busqueda}%"),
@@ -87,30 +87,30 @@ class PostulanteDAO:
                 )
             )
 
-        if experiencia_laboral is not None:
+        if experiencias_laborales is not None:
             query = (
                 query
                 .join(Postulante.experiencias_laborales)
                 .filter(
                     ExperienciaLaboral.puesto.ilike(
-                        f"%{experiencia_laboral}%"
+                        f"%{experiencias_laborales}%"
                     )
                 )
             )
 
-        if habilidad:
+        if habilidades is not None:
             query = (
                 query
                 .join(Postulante.habilidades)
                 .filter(
-                    Habilidad.nombre.in_(habilidad)
+                    Habilidad.nombre.in_(habilidades)
                 )
             )
 
         if disponibilidad is not None:
             query = (
                 query
-                .filter(Postulante.disponibilidad.like(f"{habilidad}"))
+                .filter(Postulante.disponibilidad.like(f"{disponibilidad}"))
             )
 
 

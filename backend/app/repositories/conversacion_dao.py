@@ -40,7 +40,7 @@ class ConversacionDAO:
             .join(Empleador,
                   ConexionLaboral.empleador_id == Empleador.id)
             .join(OfertaLaboral,
-                  ConexionLaboral.oferta_laboral == OfertaLaboral.id)
+                  ConexionLaboral.oferta_id == OfertaLaboral.id)
             .filter(ConexionLaboral.postulante_id == postulante_id)
         ).all()
 

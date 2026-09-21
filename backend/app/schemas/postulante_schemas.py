@@ -110,11 +110,11 @@ class PostulantePerfil(BaseModel):
         description="Foto de perfil de postulante"
     )
 
-    habilidades: List[HabilidadPerfil]  =  []
+    habilidades: List[HabilidadPerfil]  | None = None
 
-    estudios: List[EstudioPerfil] =  []
+    estudios: List[EstudioPerfil] | None = None
 
-    experiencias_laborales: List[ExperienciaLaboralPerfil] =  []
+    experiencias_laborales: List[ExperienciaLaboralPerfil] | None = None
 
     disponibilidad:  Literal[
         "JORNADA_COMPLETA",
@@ -145,19 +145,17 @@ class PostulanteSearch(BaseModel):
 class PostulanteFiltro(BaseModel):
     """Contrato de filtro de postulantes"""
 
-    busqueda: str | None
+    busqueda: str | None = None
 
-    ubicacion: str | None
+    ubicacion: str | None = None
 
-    habilidades: List[str]  | None
+    estudios: str | None = None
 
-    estudios: str | None
-
-    experiencias_laborales: str | None
+    experiencias_laborales: str | None = None
 
     disponibilidad:  Literal[
         "JORNADA_COMPLETA",
         "MEDIA_JORNADA",
         "FINES_SEMANA",
         "A_CONVENIR"
-    ] | None
+    ] | None = None

@@ -39,14 +39,13 @@ class ConexionLaboralDAO:
         """Metodo para traer conexiones laborales del postulante"""
 
         query = (self.db.query(
-            ConexionLaboral.id,
-            Empleador.id,
-            OfertaLaboral.id,
-            Empleador.nombre_negocio,
-            OfertaLaboral.titulo,
-            ConexionLaboral.estado,
-            ConexionLaboral.fecha_conexion,
-            ConexionLaboral.estado
+            ConexionLaboral.id.label("id"),
+            Empleador.id.label("empleador_id"),
+            OfertaLaboral.id.label("oferta_id"),
+            Empleador.nombre_negocio.label("nombre_empleador"),
+            OfertaLaboral.titulo.label("nombre_oferta"),
+            ConexionLaboral.estado.label("estado"),
+            ConexionLaboral.fecha_conexion.label("fecha_conexion")
             )
             .join(
                 Empleador,
@@ -77,13 +76,14 @@ class ConexionLaboralDAO:
 
 
         query =  (self.db.query(
-                ConexionLaboral.id,
-                Postulante.id,
-                OfertaLaboral.id,
-                Postulante.nombre,
-                Postulante.apellido,
-                OfertaLaboral.titulo,
-                ConexionLaboral.estado
+                ConexionLaboral.id.label("id"),
+                Postulante.id.label("postulante_id"),
+                OfertaLaboral.id.label("oferta_id"),
+                Postulante.nombre.label("nombre_postulante"),
+                Postulante.apellido.label("apellido_postulante"),
+                OfertaLaboral.titulo.label("nombre_oferta"),
+                ConexionLaboral.estado.label("estado"),
+                ConexionLaboral.fecha_conexion.label("fecha_conexion")
             )
             .join(
                 Postulante,
@@ -116,14 +116,51 @@ class ConexionLaboralDAO:
                 .first())
 
 
-    def buscar_conexion_laboral_postulante(self,postulante_id:int, oferta_id:int):
+    def obtener_conexion_laboral_postulante(self,postulante_id:int, oferta_id:int):
         """Metodo para buscar conexion laboral de postulante"""
 
 
-        return (self.db.query(ConexionLaboral)
+        return (self.db.query(
+            ConexionLaboral.id.label("id"),
+            Empleador.id.label("empleador_id"),
+            OfertaLaboral.id.label("oferta_id"),
+            Empleador.nombre_negocio.label("nombre_empleador"),
+            OfertaLaboral.titulo.label("nombre_oferta"),
+            ConexionLaboral.estado.label("estado"),
+            ConexionLaboral.fecha_conexion.label("fecha_conexion")
+
+                              )
+                .join(OfertaLaboral,
+                      ConexionLaboral.oferta_id == OfertaLaboral.id)
+                .join(Empleador,
+                      ConexionLaboral.empleador_id == Empleador.id)
                 .filter(ConexionLaboral.postulante_id == postulante_id)
                 .filter(ConexionLaboral.oferta_id== oferta_id)
                 .first())
+
+    def obtener_conexion_laboral_empleador(self,postulante_id: int,empleador_id:int, oferta_id:int | None = None):
+        """Metodo para buscar conexion laboral de postulante"""
+
+
+        return (self.db.query(
+            ConexionLaboral.id.label("id"),
+            Postulante.id.label("postulante_id"),
+            OfertaLaboral.id.label("oferta_id"),
+            Postulante.nombre.label("nombre_postulante"),
+            Postulante.apellido.label("apellido_postulante"),
+            OfertaLaboral.titulo.label("nombre_oferta"),
+            ConexionLaboral.estado.label("estado"),
+            ConexionLaboral.fecha_conexion.label("fecha_conexion")
+
+                            )
+            .join(OfertaLaboral,
+                    ConexionLaboral.oferta_id == OfertaLaboral.id)
+            .join(Postulante,
+                    ConexionLaboral.postulante_id == Postulante.id)
+            .filter(ConexionLaboral.empleador_id == empleador_id)
+            .filter(ConexionLaboral.oferta_id== oferta_id)
+            .filter(ConexionLaboral.postulante_id == postulante_id)
+            .first())
 
     def buscar_conexion_laboral(
         self,

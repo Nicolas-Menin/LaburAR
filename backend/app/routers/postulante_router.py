@@ -1,5 +1,5 @@
 from typing import List, Literal
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends,Query
 from backend.app.services.postulante_service import PostulanteService
 from backend.app.dependencies.postulante import obtener_postulante_service
 from backend.app.schemas.postulante_schemas import (PostulantePerfil, PostulanteSearch,
@@ -15,7 +15,7 @@ from backend.app.schemas.estudio_schemas import EstudioCreate, EstudioUpdate
 from backend.app.schemas.experiencia_laboral_schemas import (ExperienciaLaboralCreate,
                                                              ExperienciaLaboralUpdate)
 from backend.app.schemas.habilidad_schemas import HabilidadCreate
-from backend.app.schemas.postulacion_schemas import PostulacionPostulante,PostulacionFiltro
+from backend.app.schemas.postulacion_schemas import PostulacionPostulante
 from backend.app.core.security import oauth2_scheme
 
 
@@ -42,11 +42,13 @@ async def perfil_postulante(
 async def buscar_postulantes(
     offset: int = 0,
     filtros: PostulanteFiltro = Depends(),
+    habilidades: List[str]  | None = Query(default=None),
     postulante_service: PostulanteService = Depends(obtener_postulante_service)
 ):
     """Funcion para buscar postulantes"""
 
-    return postulante_service.buscar_postulantes(filtros,offset)
+    print(habilidades)
+    return postulante_service.buscar_postulantes(filtros,habilidades,offset)
 
 @postulante_router.put("/actualizar-postulante")
 
@@ -211,23 +213,23 @@ async def eliminar_habilidad(
 
 @postulante_router.get("/mis-postulaciones",response_model=List[PostulacionPostulante])
 async def filtrar_postulaciones(
-    datos: PostulacionFiltro,
     offset: int,
+    busqueda: str | None = None,
     token: str = Depends(oauth2_scheme),
     usuario_service: UsuarioService = Depends(obtener_usuario_service),
     postulante_service: PostulanteService = Depends(obtener_postulante_service)
 ):
-    """Funcion para obtener las postulacuiones del postulante"""
+    """Funcion para obtener las postulaciones del postulante"""
 
     usuario_id = usuario_service.obtener_usuario_id(token)
 
     return postulante_service.filtrar_postulaciones(
-        datos= datos,
+        busqueda=busqueda,
         usuario_id=usuario_id,
         offset=offset
     )
 
-@postulante_router.post("crear-postulacion")
+@postulante_router.post("/crear-postulacion")
 async def crear_postulacion(
     oferta_id: int,
     token: str =  Depends(oauth2_scheme),
@@ -243,7 +245,7 @@ async def crear_postulacion(
         oferta_id=oferta_id
     )
 
-@postulante_router.get("verificar-postulacion",response_model=PostulacionPostulante)
+@postulante_router.get("/verificar-postulacion",response_model=PostulacionPostulante | None)
 async def verificar_postulacion(
     oferta_id: int,
     token: str = Depends(oauth2_scheme),
@@ -267,7 +269,7 @@ async def actualizar_conexion_laboral(
     usuario_service: UsuarioService = Depends(obtener_usuario_service),
     conexion_laboral_service: ConexionLaboralService = Depends(obtener_conexion_laboral_service)
 ):
-    """Funcion para aceptar conexion laboral con empleador"""
+    """Funcion para actualizar estado de solicitud laboral con empleador"""
 
 
     usuario_id = usuario_service.obtener_usuario_id(token)
@@ -285,7 +287,7 @@ async def verificar_conexion_laboral(
     usuario_service: UsuarioService = Depends(obtener_usuario_service),
     conexion_laboral_service: ConexionLaboralService = Depends(obtener_conexion_laboral_service)
 ):
-    """Funcion paara verificar si existe una conexion laboral de postulante"""
+    """Funcion para verificar si existe una conexion laboral de postulante"""
 
     usuario_id = usuario_service.obtener_usuario_id(token)
 

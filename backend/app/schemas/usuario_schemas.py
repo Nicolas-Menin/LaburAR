@@ -1,4 +1,5 @@
 from typing import Literal
+from datetime import datetime
 from pydantic import BaseModel, EmailStr, Field, HttpUrl
 
 
@@ -46,7 +47,7 @@ class TokenResponse(BaseModel):
     """Contrato de respuesta de token"""
     access_token: str
 
-    token_type: Literal["bearer"]
+    token_type: Literal["Bearer"]
 
     rol: Literal["POSTULANTE","EMPLEADOR","ADMINISTRADOR"]
 
@@ -55,14 +56,21 @@ class UsuarioAdministrador(BaseModel):
 
     usuario_id: int
 
-    tipo: Literal["POSTULANTE", "EMPLEADOR"]
+    postulante_id: int | None = None
+
+    empleador_id: int | None = None
+
+    nombre_postulante: str | None = None
+
+    apellido_postulante: str | None = None
+
+    nombre_negocio: str | None = None
+
+    rol: Literal["POSTULANTE", "EMPLEADOR"]
 
     estado: Literal["ACTIVO","DESACTIVADO","BANEADO"]
 
-    foto_perfil: HttpUrl | None
+    fecha_creacion: datetime
 
-class UsuarioFiltro(BaseModel):
-    """Contrato para filtrar usuarios"""
-
-    rol: Literal["POSTULANTE","EMPLEADOR"]
+    foto_perfil: HttpUrl | None = None
 

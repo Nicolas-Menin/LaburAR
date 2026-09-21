@@ -9,7 +9,7 @@ from backend.app.dependencies.conexion_laboral import obtener_conexion_laboral_s
 from backend.app.dependencies.empleador import obtener_empleador_service
 from backend.app.schemas.empleador_schemas import (EmpleadorUpdate, EmpleadorPerfil,
                                                    EmpleadorSearch,EmpleadorFiltro)
-from backend.app.schemas.postulacion_schemas import PostulacionEmpleador,PostulacionFiltro
+from backend.app.schemas.postulacion_schemas import PostulacionEmpleador
 from backend.app.schemas.oferta_laboral_schemas import OfertaLaboralCreate,OfertaLaboralUpdate
 from backend.app.core.security import oauth2_scheme
 
@@ -56,10 +56,11 @@ async def actualizar_empleador(
         foto_perfil=foto_perfil
     )
 
-@empleador_router.get("filtrar-postulaciones-oferta-laboral",response_model=List[PostulacionEmpleador])
+@empleador_router.get("/filtrar-postulaciones-oferta-laboral",response_model=List[PostulacionEmpleador])
 async def filtrar_postulaciones(
     offset: int = 0,
-    datos: PostulacionFiltro = Depends(),
+    busqueda: str | None = None,
+    oferta_id: int | None = None,
     token: str = Depends(oauth2_scheme),
     usuario_service: UsuarioService = Depends(obtener_usuario_service),
     empleador_service: EmpleadorService = Depends(obtener_empleador_service)
@@ -70,20 +71,25 @@ async def filtrar_postulaciones(
 
 
     return empleador_service.filtrar_postulaciones_oferta_laboral(
-        datos=datos,
         usuario_id=usuario_id,
-        offset=offset
+        offset=offset,
+        busqueda=busqueda,
+        oferta_id=oferta_id
     )
 
 
 @empleador_router.post("/crear-oferta-laboral")
 async def crear_oferta_laboral(
     datos: OfertaLaboralCreate,
+    token: str = Depends(oauth2_scheme),
+    usuario_service: UsuarioService = Depends(obtener_usuario_service),
     empleador_service: EmpleadorService = Depends(obtener_empleador_service)
 ):
     """Funcion para crear una oferta laboral de empleador"""
 
-    return empleador_service.crear_oferta_laboral(datos)
+    usuario_id = usuario_service.obtener_usuario_id(token)
+
+    return empleador_service.crear_oferta_laboral(datos,usuario_id)
 
 
 @empleador_router.put("/actualizar-oferta-laboral")
@@ -170,7 +176,7 @@ async def verificar_conexion_laboral(
     usuario_service: UsuarioService = Depends(obtener_usuario_service),
     conexion_laboral_service: ConexionLaboralService = Depends(obtener_conexion_laboral_service)
 ):
-    """Funcion para verificar si existe una conexion laboral con el empleador"""
+    """Funcion para verificar si existe una conexion laboral de postulante"""
 
     usuario_id = usuario_service.obtener_usuario_id(token)
 

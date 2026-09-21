@@ -1,3 +1,4 @@
+from typing import List
 from backend.app.repositories.oferta_laboral_dao import OfertaLaboralDAO
 from backend.app.schemas.oferta_laboral_schemas import OfertaLaboralFiltro
 
@@ -11,7 +12,12 @@ class OfertaLaboralService:
 
 
 
-    def buscar_ofertas_laborales(self,filtros:OfertaLaboralFiltro,busqueda: str | None = None, ):
+    def buscar_ofertas_laborales(self,
+                                 filtros:OfertaLaboralFiltro,
+                                 offset: int = 0,
+                                 busqueda: str | None = None,
+                                 dias_laborales: List[str] = None,
+                                 ):
         """Metodo para buscar ofertas laborales"""
 
         return self.oferta_laboral_dao.filtrar_ofertas_laborales(
@@ -22,6 +28,7 @@ class OfertaLaboralService:
                 if filtros.jornada else None,
             turno = filtros.turno
                 if filtros.turno else None,
-            dias_laborales = filtros.dias_laborales
-                if filtros.dias_laborales else None
+            dias_laborales = dias_laborales
+                if dias_laborales else None,
+            offset=offset
         )

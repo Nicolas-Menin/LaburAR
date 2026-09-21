@@ -18,7 +18,7 @@ class BrevoService:
         ):
         """Metodo para enviar email de recuperacion de contraseña"""
 
-        url =f"{API_URL}0/resetear-contraseña?token={token}"
+        url =f"{API_URL}/resetear-contraseña?token={token}"
 
         return self.client.transactional_emails.send_transac_email(
                 subject="Restablecimiento de contraseña",

@@ -42,7 +42,8 @@ class UsuarioService:
         usuario = Usuario(
             email=datos.usuario.email,
             password_hash = password_hash,
-            rol = "POSTULANTE"
+            rol = "POSTULANTE",
+            estado="ACTIVO"
         )
 
         self.usuario_dao.crear_usuario(usuario)
@@ -79,7 +80,8 @@ class UsuarioService:
         usuario = Usuario(
             email =  datos.usuario.email,
             password_hash = password_hash,
-            rol = "EMPLEADOR"
+            rol = "EMPLEADOR",
+            estado="ACTIVO"
         )
 
         self.usuario_dao.crear_usuario(usuario)

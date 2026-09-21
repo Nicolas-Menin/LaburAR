@@ -3,7 +3,6 @@ from backend.app.repositories.empleador_dao import EmpleadorDAO
 from backend.app.schemas.empleador_schemas import EmpleadorUpdate, EmpleadorFiltro
 from backend.app.services.cloudinary_service import CloudinaryService
 from backend.app.services.postulacion_service import PostulacionService
-from backend.app.schemas.postulacion_schemas import PostulacionFiltro
 from backend.app.repositories.oferta_laboral_dao import OfertaLaboralDAO
 from backend.app.schemas.oferta_laboral_schemas import OfertaLaboralCreate,OfertaLaboralUpdate
 from backend.app.models.oferta_laboral import OfertaLaboral
@@ -36,22 +35,22 @@ class EmpleadorService:
         if not empleador:
             raise HTTPException(404, "Empleado no encontrado")
 
-        if datos.nombre_negocio:
+        if datos.nombre_negocio is not None:
             empleador.nombre_negocio = datos.nombre_negocio
 
-        if datos.direccion:
+        if datos.direccion is not None:
             empleador.direccion = datos.direccion
 
-        if datos.ubicacion:
+        if datos.ubicacion is not None:
             empleador.ubicacion = datos.ubicacion
 
-        if datos.descripcion:
+        if datos.descripcion is not None:
             empleador.descripcion = datos.descripcion
 
-        if datos.rubro:
+        if datos.rubro is not None:
             empleador.rubro = datos.rubro
 
-        if foto_perfil:
+        if foto_perfil is not None:
             foto_url = self.cloudinary_service.actualizar_foto_perfil(foto_perfil,usuario_id)
             empleador.foto_perfil = foto_url
 
@@ -61,7 +60,12 @@ class EmpleadorService:
     def perfil_empleador(self,usuario_id: int):
         """Metodo para mostrar perfil del empleador"""
 
-        return self.empleador_dao.buscar_por_id(usuario_id)
+        empleador = self.empleador_dao.buscar_por_id(usuario_id)
+
+        if not empleador:
+            raise HTTPException(404, "Empleador no encontrado")
+
+        return self.empleador_dao.perfil_empleador(empleador.id)
 
     def buscar_empleadores(self,filtros: EmpleadorFiltro):
         """Metodo para filtrar empleadores"""
@@ -80,24 +84,38 @@ class EmpleadorService:
         )
 
 
-    def filtrar_postulaciones_oferta_laboral(self,datos: PostulacionFiltro,usuario_id: int, offset: int = 0):
+    def filtrar_postulaciones_oferta_laboral(self,
+                                             usuario_id: int,
+                                             offset: int = 0,
+                                             busqueda: str | None = None,
+                                             oferta_id: int | None = None
+                                             ):
 
         """Metodo para filtrar postulaciones de oferta laboral"""
 
         empleador = self.empleador_dao.buscar_por_id(usuario_id)
 
+        if not empleador:
+            raise HTTPException(404, "Empleador no encontrado")
+
         return self.postulacion_service.listar_postulaciones_empleador(
             empleador.id,
-            datos.busqueda,
+            busqueda,
             offset,
-            datos.oferta_id
+            oferta_id
         )
 
-    def crear_oferta_laboral(self,datos: OfertaLaboralCreate):
+    def crear_oferta_laboral(self,datos: OfertaLaboralCreate,usuario_id: int):
         """Metodo para crear oferta laboral"""
 
+        empleador = self.empleador_dao.buscar_por_id(usuario_id)
+
+        if not empleador:
+            raise HTTPException(404, "Empleador no encontrado")
+
         oferta_laboral = OfertaLaboral(
-            empleador_id = datos.empleador_id,
+            titulo = datos.titulo,
+            empleador_id= empleador.id,
             descripcion = datos.descripcion,
             requisitos = datos.requisitos,
             ubicacion = datos.ubicacion,
@@ -133,43 +151,43 @@ class EmpleadorService:
         if not oferta_laboral:
             raise HTTPException(404,"No existe la oferta laboral de este empleador")
 
-        if datos.titulo:
+        if datos.titulo is not None:
             oferta_laboral.titulo = datos.titulo
 
-        if datos.descripcion:
+        if datos.descripcion is not None:
             oferta_laboral.descripcion = datos.descripcion
 
-        if datos.requisitos:
+        if datos.requisitos is not None:
             oferta_laboral.requisitos = datos.requisitos
 
-        if datos.ubicacion:
+        if datos.ubicacion is not None:
             oferta_laboral.ubicacion = datos.ubicacion
 
-        if datos.direccion:
+        if datos.direccion is not None:
             oferta_laboral.direccion = datos.direccion
 
-        if datos.rubro:
+        if datos.rubro is not None:
             oferta_laboral.rubro = datos.rubro
 
-        if datos.estado:
+        if datos.estado is not None:
             oferta_laboral.estado = datos.estado
 
-        if datos.salario_tipo:
+        if datos.salario_tipo is not None:
             oferta_laboral.salario_tipo = datos.salario_tipo
 
-        if datos.salario_maximo:
+        if datos.salario_maximo is not None:
             oferta_laboral.salario_maximo = datos.salario_maximo
 
-        if datos.salario_minimo:
+        if datos.salario_minimo is not None:
             oferta_laboral.salario_minimo = datos.salario_minimo
 
-        if datos.dias_laborales:
+        if datos.dias_laborales is not None:
             oferta_laboral.dias_laborales = datos.dias_laborales
 
-        if datos.hora_inicio:
+        if datos.hora_inicio is not None:
             oferta_laboral.hora_inicio = datos.hora_inicio
 
-        if datos.hora_fin:
+        if datos.hora_fin is not None:
             oferta_laboral.hora_fin = datos.hora_fin
 
         return self.oferta_laboral_dao.actualizar_oferta(oferta_laboral)

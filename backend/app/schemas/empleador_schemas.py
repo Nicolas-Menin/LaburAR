@@ -1,5 +1,5 @@
 from typing import List
-from pydantic import BaseModel, Field, HttpUrl
+from pydantic import BaseModel, Field, HttpUrl,ConfigDict
 from backend.app.schemas.usuario_schemas import UsuarioCreate
 from backend.app.schemas.oferta_laboral_schemas import OfertaLaboralEmpleador
 
@@ -87,6 +87,7 @@ class EmpleadorUpdate(BaseModel):
 
 class EmpleadorPerfil(BaseModel):
     """Contrato que muestra el perfil completo del empleador."""
+    model_config = ConfigDict(from_attributes=True)
 
     id: int
 
@@ -111,7 +112,7 @@ class EmpleadorPerfil(BaseModel):
         description="Foto de perfil de negocio o empleador"
     )
 
-    ofertas_laborales: List[OfertaLaboralEmpleador] = []
+    ofertas_laborales: List[OfertaLaboralEmpleador] | None = None
 
 
 class EmpleadorSearch(BaseModel):
@@ -134,10 +135,10 @@ class EmpleadorSearch(BaseModel):
 class EmpleadorFiltro(BaseModel):
     """Contrato de filtro de empleadores"""
 
-    busqueda: str | None
+    busqueda: str | None = None
 
-    direccion: str | None
+    direccion: str | None = None
 
-    ubicacion: str | None
+    ubicacion: str | None = None
 
-    rubro: str | None
+    rubro: str | None = None

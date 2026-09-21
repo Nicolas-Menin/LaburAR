@@ -24,11 +24,14 @@ class AdministradorDAO:
         if rol == "POSTULANTE":
 
             query = (self.db.query(
-                Postulante.id,
-                Postulante.nombre,
-                Postulante.apellido,
-                Usuario.estado,
-                Usuario.fecha_creacion
+                Usuario.id.label("usuario_id"),
+                Postulante.id.label("postulante_id"),
+                Postulante.nombre.label("nombre_postulante"),
+                Postulante.apellido.label("apellido_postulante"),
+                Usuario.rol.label("rol"),
+                Usuario.estado.label("estado"),
+                Usuario.fecha_creacion.label("fecha_creacion"),
+                Postulante.foto_perfil.label("foto_perfil")
                 )
                 .join(Usuario,
                       Postulante.usuario_id == Usuario.id)
@@ -45,10 +48,13 @@ class AdministradorDAO:
 
             query = (
                 self.db.query(
-                    Empleador.id,
-                    Empleador.nombre_negocio,
-                    Usuario.estado,
-                    Usuario.fecha_creacion
+                    Usuario.id.label("usuario_id"),
+                    Empleador.id.label("empleador_id"),
+                    Empleador.nombre_negocio.label("nombre_negocio"),
+                    Usuario.rol.label("rol"),
+                    Usuario.estado.label("estado"),
+                    Usuario.fecha_creacion.label("fecha_creacion"),
+                    Empleador.foto_perfil.label("foto_perfil")
                 )
                 .join(
                     Usuario,
@@ -63,25 +69,12 @@ class AdministradorDAO:
                 )
 
 
-
         return query.offset(offset).limit(limit).all()
 
-    def desactivar_usuario(self,usuario_id:int):
-        """Metodo para desactivar usuario"""
-
-        usuario = self.db.query(Usuario).filter(Usuario.id == usuario_id).first()
-
-        usuario.estado = "DESACTIVADO"
+    def actualizar_estado_usuario(self,usuario: Usuario):
+        """Metodo para cambiar el estado de usuario"""
 
         self.db.commit()
         self.db.refresh(usuario)
 
-    def banear_usuario(self,usuario_id:int):
-        """Metodo para banear usuario"""
-
-        usuario =  self.db.query(Usuario).filter(Usuario.id == usuario_id).first()
-
-        usuario.estado = "BANEADO"
-
-        self.db.commit()
-        self.db.refresh(usuario)
+        return usuario

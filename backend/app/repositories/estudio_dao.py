@@ -36,6 +36,8 @@ class EstudiosDAO:
         self.db.delete(estudio)
         self.db.commit()
 
+        return estudio
+
 
     def buscar_estudio_id(self,estudio_id: int,postulante_id: int):
         """Metodo para buscar estudio por id"""

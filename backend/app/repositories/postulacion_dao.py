@@ -32,15 +32,14 @@ class PostulacionDAO:
         """Metodo para filtrar las postulaciones del postulante"""
 
         query = (self.db.query(
-            Postulacion.id,
-            Postulacion.oferta_id,
-            Empleador.id,
-            OfertaLaboral.titulo,
-            Empleador.nombre_negocio,
-            Empleador.foto_perfil,
-            Postulacion.estado,
-            Postulacion.fecha_postulacion,
-            Postulacion.estado
+            Postulacion.id.label("id"),
+            OfertaLaboral.id.label("oferta_id"),
+            Empleador.id.label("empleador_id"),
+            OfertaLaboral.titulo.label("titulo_oferta"),
+            Empleador.nombre_negocio.label("nombre_empleador"),
+            Empleador.foto_perfil.label("foto_empleador"),
+            Postulacion.estado.label("estado"),
+            Postulacion.fecha_postulacion.label("fecha_postulacion")
             )
             .join(
                 Empleador,
@@ -74,16 +73,15 @@ class PostulacionDAO:
 
 
         query = (self.db.query(
-                Postulacion.id.label("postulacion_id"),
+                Postulacion.id.label("id"),
                 Postulante.id.label("postulante_id"),
                 OfertaLaboral.id.label("oferta_id"),
-                OfertaLaboral.titulo,
-                Postulante.nombre,
-                Postulante.apellido,
-                Postulante.foto_perfil,
-                Postulacion.estado,
-                Postulacion.fecha_postulacion,
-                Postulacion.estado
+                OfertaLaboral.titulo.label("titulo_oferta"),
+                Postulante.nombre.label("nombre_postulante"),
+                Postulante.apellido.label("apellido_postulante"),
+                Postulante.foto_perfil.label("foto_postulante"),
+                Postulacion.estado.label("estado"),
+                Postulacion.fecha_postulacion.label("fecha_postulacion")
             )
             .join(
                 Postulante,
@@ -130,3 +128,27 @@ class PostulacionDAO:
         self.db.refresh(postulacion)
 
         return postulacion
+
+    def obtener_postulacion(self,postulante_id: int, oferta_id: int):
+
+        return  (self.db.query(
+            Postulacion.id.label("id"),
+            OfertaLaboral.id.label("oferta_id"),
+            Empleador.id.label("empleador_id"),
+            OfertaLaboral.titulo.label("titulo_oferta"),
+            Empleador.nombre_negocio.label("nombre_empleador"),
+            Empleador.foto_perfil.label("foto_empleador"),
+            Postulacion.estado.label("estado"),
+            Postulacion.fecha_postulacion.label("fecha_postulacion")
+            )
+            .join(
+                Empleador,
+                Postulacion.empleador_id == Empleador.id
+            )
+            .join(
+                OfertaLaboral,
+                Postulacion.oferta_id == OfertaLaboral.id
+            )
+            .filter(Postulacion.postulante_id == postulante_id)
+            .filter(Postulacion.oferta_id == oferta_id)
+        ).first()

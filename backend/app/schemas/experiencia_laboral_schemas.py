@@ -87,8 +87,8 @@ class ExperienciaLaboralPerfil(BaseModel):
 
     fecha_inicio: date
 
-    fecha_fin: date | None
+    fecha_fin: date | None = None
 
-    descripcion: str | None
+    descripcion: str | None = None
 
     area: str

@@ -10,7 +10,9 @@ class AutenticacionService:
 
         password_bits = password.encode()
 
-        hash_bites = bcrypt.gensalt(password_bits,bcrypt.gensalt())
+        salt = bcrypt.gensalt()
+
+        hash_bites = bcrypt.hashpw(password_bits,salt)
 
         contrasena_hash = hash_bites.decode()
 
@@ -20,7 +22,4 @@ class AutenticacionService:
     def verify_password(self,password_user: str,password_db:str):
         """Metodo para verificar la contraseña de usuario es correcta."""
 
-        if bcrypt.checkpw(password_user.encode(),password_db.encode()):
-            return False
-
-        return False
+        return bcrypt.checkpw(password_user.encode(),password_db.encode())

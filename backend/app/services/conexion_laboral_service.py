@@ -128,6 +128,9 @@ class ConexionLaboralService:
 
             self.conversacion_dao.crear_conversacion(conversacion)
 
+        postulacion.estado = conexion_laboral.estado
+        self.postulacion_dao.actualizar_postulacion(postulacion)
+
         return conexion_laboral
 
     def actualizar_conexion_laboral_estado(
@@ -155,6 +158,16 @@ class ConexionLaboralService:
 
         conexion_laboral.estado = estado
 
+        # VERIFICA SI EXISTE LA POSTULACION
+        postulacion = self.postulacion_dao.buscar_postulacion(postulante.id,conexion_laboral.oferta_id)
+
+        # SI EXISTE ENTONCES LE CAMBIA EL ESTADO YA SEA RECHAZADA O ACEPTADA Y ACTUALIZA LA POSTULACION
+        if postulacion:
+            postulacion.estado = conexion_laboral.estado
+            self.postulacion_dao.actualizar_postulacion(postulacion)
+
+        # VERIFICA SI EL ESTADO DE CONEXION LABORAL YA ESTE ACEPTADO
+        # Y SI ES QUE POR ESA CONEXION NO HAY UNA CONVERSACION CREADA
         if conexion_laboral.estado == "ACEPTADA"  and not conexion_laboral.conversacion:
             conversacion = Conversacion(
                 conexion_laboral_id= conexion_laboral_id
@@ -173,6 +186,9 @@ class ConexionLaboralService:
 
         postulante = self.postulante_dao.buscar_por_id(usuario_id)
 
+        if not postulante:
+            raise HTTPException(404, "El postulante no existe")
+
         return self.conexion_laboral_dao.listar_conexiones_laborales_postulante(postulante.id,busqueda,offset)
 
 
@@ -189,11 +205,17 @@ class ConexionLaboralService:
 
         postulante = self.postulante_dao.buscar_por_id(usuario_id)
 
-        return self.conexion_laboral_dao.buscar_conexion_laboral_postulante(postulante.id,oferta_id)
+        if not postulante:
+            raise HTTPException(404, "El postulante no existe")
 
-    def verificar_conexion_laboral_empleador(self,usuario_id: int,postulante_id:int, oferta_id: int | None = None):
+        return self.conexion_laboral_dao.obtener_conexion_laboral_postulante(postulante.id,oferta_id)
+
+    def verificar_conexion_laboral_empleador(self,usuario_id: int,postulante_id: int, oferta_id: int | None = None):
         """Método para verificar si el empleador posee una conexión laboral"""
 
         empleador = self.empleador_dao.buscar_por_id(usuario_id)
 
-        return self.conexion_laboral_dao.buscar_conexion_laboral(postulante_id,empleador.id,oferta_id)
+        if not empleador:
+            raise HTTPException(404, "No existe el empleador")
+
+        return self.conexion_laboral_dao.obtener_conexion_laboral_empleador(postulante_id,empleador.id,oferta_id)

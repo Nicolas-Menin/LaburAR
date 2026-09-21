@@ -1,7 +1,7 @@
 from datetime import time, datetime
-from typing import Literal
+from typing import Literal, List
 from decimal import Decimal
-from pydantic import BaseModel, Field, HttpUrl
+from pydantic import BaseModel, Field, HttpUrl, ConfigDict
 
 
 
@@ -14,16 +14,12 @@ class OfertaLaboralCreate(BaseModel):
         description="Titulo de la oferta laboral"
     )
 
-    empleador_id: int = Field(
-        description="Id del empleador"
-    )
-
     descripcion: str = Field(
         min_length=2,
         description="Descripcion de la oferta laboral"
     )
 
-    requisitos: list = Field(
+    requisitos: List[str] = Field(
         description="Requisitos de la oferta laboral"
     )
 
@@ -72,7 +68,7 @@ class OfertaLaboralCreate(BaseModel):
                        description="Turno que va a tener la oferta laboral."
                    )
 
-    dias_laborales: list | None = Field(
+    dias_laborales: List[str] | None = Field(
         default=None,
         description="Dias laborales de la oferta laboral"
     )
@@ -94,41 +90,49 @@ class OfertaLaboralUpdate(BaseModel):
     titulo: str | None= Field(
         min_length=2,
         max_length=100,
+        default= None,
         description="Titulo de la oferta laboral"
     )
 
     descripcion: str | None = Field(
         min_length=2,
+        default= None,
         description="Descripcion de la oferta laboral"
     )
 
-    requisitos: list | None = Field(
+    requisitos: List[str] | None = Field(
+        default= None,
         description="Requisitos de la oferta laboral"
     )
 
     ubicacion: str | None = Field(
         min_length=2,
+        default= None,
         description="Ubicacion en donde se encuentra la oferta laboral."
     )
 
     direccion: str | None = Field(
         min_length=1,
         max_length=100,
+        default= None,
         description="Direccion exacta en donde se encuentra la oferta laboral"
     )
 
     rubro: str | None = Field(
         min_length=1,
         max_length=50,
+        default= None,
         description="Sector donde pertenece la oferta laboral"
     )
 
     estado: Literal["ACTIVA", "PAUSADA","CERRADA"] = Field(
+        default= None,
         description="Estado de la postulacion."
     )
 
     salario_tipo: Literal["FIJO","RANGO",
                           "A_CONVENIR","NO_INFORMAR"] | None = Field(
+                              default= None,
                               description="Tipo de salario que va a tener la oferta laboral."
                           )
 
@@ -143,15 +147,17 @@ class OfertaLaboralUpdate(BaseModel):
     )
 
     jornada: Literal["COMPLETA","MEDIA_JORNADA","TEMPORAL","A_CONVENIR"] | None= Field(
+        default= None,
         description="Tipo de jornada que va a tener la oferta laboral"
     )
 
     turno: Literal["MAÑANA","TARDE",
                    "NOCHE","A_CONVENIR"] | None = Field(
+                       default= None,
                        description="Turno que va a tener la oferta laboral."
                    )
 
-    dias_laborales: list | None = Field(
+    dias_laborales: List[str] | None = Field(
         default=None,
         description="Dias laborales de la oferta laboral"
     )
@@ -173,7 +179,7 @@ class OfertaLaboralPerfil(BaseModel):
 
     nombre_negocio: str
 
-    foto_empleador: HttpUrl | None
+    foto_empleador: HttpUrl | None = None
 
     ubicacion: str
 
@@ -181,25 +187,25 @@ class OfertaLaboralPerfil(BaseModel):
 
     descripcion: str
 
-    requisitos: str
+    requisitos: List[str] = None
 
     rubro: str
 
     salario_tipo: Literal["FIJO", "RANGO", "A_CONVENIR", "NO_INFORMAR"]
 
-    salario_minimo: Decimal | None
+    salario_minimo: Decimal | None = None
 
-    salario_maximo: Decimal | None
+    salario_maximo: Decimal | None = None
 
     jornada: Literal["COMPLETA", "MEDIA_JORNADA", "TEMPORAL", "A_CONVENIR"]
 
     turno: Literal["MAÑANA", "TARDE", "NOCHE", "A_CONVENIR"]
 
-    dias_laborales: list | None
+    dias_laborales: List[str] | None = None
 
-    hora_inicio: time | None
+    hora_inicio: time | None = None
 
-    hora_fin: time | None
+    hora_fin: time | None = None
 
     fecha_creacion: datetime
 
@@ -208,7 +214,7 @@ class OfertaLaboralSearch(BaseModel):
 
     id: int
 
-    id_empleador: int
+    empleador_id: int
 
     titulo: str
 
@@ -220,9 +226,12 @@ class OfertaLaboralSearch(BaseModel):
 
     descripcion: str
 
+    foto_perfil_empleador: HttpUrl | None = None
+
 
 class OfertaLaboralEmpleador(BaseModel):
     """Contrato para visualizar ofertas laborales del empleador desde su perfil"""
+    model_config = ConfigDict(from_attributes=True)
 
     id: int
 
@@ -244,4 +253,3 @@ class OfertaLaboralFiltro(BaseModel):
 
     turno:  Literal["MAÑANA", "TARDE", "NOCHE", "A_CONVENIR"] | None = None
 
-    dias_laborales: list[str] | None = None

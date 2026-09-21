@@ -24,7 +24,13 @@ class PostulacionService:
 
         postulante = self.postulante_dao.buscar_por_id(usuario_id)
 
+        if not postulante:
+            raise HTTPException(404,"Postulante no encontrado")
+
         oferta = self.oferta_laboral_dao.buscar_por_id(oferta_id)
+
+        if not oferta:
+            raise HTTPException(404, "Oferta laboral no encontrada")
 
         postulacion = self.verificar_postulacion(usuario_id,oferta.id)
 
@@ -67,7 +73,10 @@ class PostulacionService:
 
         postulante = self.postulante_dao.buscar_por_id(usuario_id)
 
-        return  self.postulacion_dao.buscar_postulacion(
+        if not postulante:
+            raise HTTPException(404, "Postulante no encontrado")
+
+        return  self.postulacion_dao.obtener_postulacion(
             postulante_id=postulante.id,
             oferta_id=oferta_id
         )

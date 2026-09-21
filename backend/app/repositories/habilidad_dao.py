@@ -25,3 +25,11 @@ class HabilidadDAO:
         self.db.delete(habilidad)
         self.db.commit()
 
+    def buscar_por_id(self,habilidad_id:int,postulante_id: int):
+        """Metodo para buscar habilidad de postulante mediante id"""
+
+        return (
+            self.db.query(Habilidad)
+            .filter(Habilidad.id == habilidad_id)
+            .filter(Habilidad.postulante_id == postulante_id)
+        ).first()

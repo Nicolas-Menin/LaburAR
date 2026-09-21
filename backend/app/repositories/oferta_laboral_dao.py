@@ -1,5 +1,5 @@
+from typing import Literal, List
 from sqlalchemy.orm import Session
-from typing import Literal
 from backend.app.models.oferta_laboral import OfertaLaboral
 from backend.app.models.empleador import Empleador
 
@@ -71,7 +71,7 @@ class OfertaLaboralDAO:
       rubro: str | None = None,
       jornada: Literal["COMPLETA", "MEDIA_JORNADA", "TEMPORAL", "A_CONVENIR"] | None = None,
       turno:  Literal["MAÑANA", "TARDE", "NOCHE", "A_CONVENIR"] | None = None,
-      dias_laborales: list[str] | None = None,
+      dias_laborales: List[str] | None = None,
       offset: int = 0,
       limit: int = 10
     ):
@@ -79,11 +79,16 @@ class OfertaLaboralDAO:
 
 
         query = self.db.query(
-            OfertaLaboral.id,
-            OfertaLaboral.empleador_id,
-            OfertaLaboral.titulo,
-            OfertaLaboral.descripcion
-        )
+            OfertaLaboral.id.label("id"),
+            OfertaLaboral.empleador_id.label("empleador_id"),
+            OfertaLaboral.titulo.label("titulo"),
+            Empleador.nombre_negocio.label("nombre_negocio"),
+            OfertaLaboral.ubicacion.label("ubicacion"),
+            OfertaLaboral.direccion.label("direccion"),
+            OfertaLaboral.descripcion.label("descripcion"),
+            Empleador.foto_perfil.label("foto_perfil_empleador")
+        ).join(Empleador,
+               OfertaLaboral.empleador_id == Empleador.id)
 
         if busqueda:
             query = query.filter(

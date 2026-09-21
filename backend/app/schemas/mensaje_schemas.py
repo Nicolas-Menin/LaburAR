@@ -34,7 +34,7 @@ class MensajeChat(BaseModel):
 class MensajeList(BaseModel):
     """Contrato que  muestra la lista de mensajes del chat"""
 
-    mensajes: List[MensajeChat]
+    mensajes: List[MensajeChat] | None = None
 
 
 class MensajeStateUpdate(BaseModel):
