@@ -1,6 +1,5 @@
 from sqlalchemy.orm import Session
 from backend.app.models.empleador import Empleador
-from backend.app.models.oferta_laboral import OfertaLaboral
 
 class EmpleadorDAO:
     """Clase encargada del acceso a los datos de empleador"""
