@@ -113,6 +113,8 @@ class UsuarioService:
         if not usuario:
             raise HTTPException(401,"Credenciales invalidas")
 
+        if usuario.estado in ["DESACTIVADO","BANEADO"]:
+            raise HTTPException(403,"Este usuario esta baneado o desactivado")
 
         password_verification = self.autenticacion_service.verify_password(
                 password,usuario.password_hash)

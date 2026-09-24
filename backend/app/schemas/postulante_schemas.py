@@ -1,5 +1,5 @@
 from typing import Literal, List
-from pydantic import BaseModel, Field, HttpUrl
+from pydantic import BaseModel, Field, HttpUrl, ConfigDict
 from backend.app.schemas.usuario_schemas import UsuarioCreate
 from backend.app.schemas.habilidad_schemas import HabilidadPerfil
 from backend.app.schemas.estudio_schemas import EstudioPerfil
@@ -91,6 +91,7 @@ class PostulanteUpdate(BaseModel):
 
 class PostulantePerfil(BaseModel):
     """Contrato que muestra el perfil completo del postulante."""
+    model_config = ConfigDict(from_attributes=True)
 
     id: int
 

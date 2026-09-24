@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 
 
 class HabilidadCreate(BaseModel):
@@ -13,6 +13,7 @@ class HabilidadCreate(BaseModel):
 
 class HabilidadPerfil(BaseModel):
     """Contrato que muestra las habilidades del postulante"""
+    model_config = ConfigDict(from_attributes=True)
 
     id: int
 

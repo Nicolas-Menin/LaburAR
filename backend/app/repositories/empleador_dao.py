@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 from backend.app.models.empleador import Empleador
-
+from backend.app.models.usuario import Usuario
 class EmpleadorDAO:
     """Clase encargada del acceso a los datos de empleador"""
 
@@ -64,7 +64,9 @@ class EmpleadorDAO:
         """Metodo para filtrar empleadores"""
 
 
-        query = self.db.query(Empleador)
+        query = self.db.query(Empleador).join(
+            Usuario,Empleador.usuario_id == Usuario.id
+        ).filter(Usuario.estado == "ACTIVO")
 
         if busqueda:
             query = query.filter(Empleador.nombre_negocio.ilike(busqueda))

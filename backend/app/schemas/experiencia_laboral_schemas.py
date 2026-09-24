@@ -1,5 +1,5 @@
 from datetime import date
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field,ConfigDict
 
 
 class ExperienciaLaboralCreate(BaseModel):
@@ -78,6 +78,7 @@ class ExperienciaLaboralUpdate(BaseModel):
 
 class ExperienciaLaboralPerfil(BaseModel):
     """Contrato que muestra una experiencia laboral del postulante"""
+    model_config = ConfigDict(from_attributes=True)
 
     id: int
 

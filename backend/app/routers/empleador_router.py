@@ -30,12 +30,14 @@ async def perfil_empleador(
 
 @empleador_router.get("/buscar-empleadores",response_model=List[EmpleadorSearch])
 async def buscar_empleadores(
+    busqueda: str | None = None,
+    offset: int = 0,
     filtros: EmpleadorFiltro = Depends(),
     empleador_service: EmpleadorService = Depends(obtener_empleador_service)
 ):
     """Funcion para buscar empleadores"""
 
-    return empleador_service.buscar_empleadores(filtros)
+    return empleador_service.buscar_empleadores(filtros,busqueda,offset)
 
 @empleador_router.put("/actualizar-empleador")
 async def actualizar_empleador(
@@ -138,7 +140,7 @@ async def crear_conexion_laboral_postulacion(
     usuario_service: UsuarioService = Depends(obtener_usuario_service),
     conexion_laboral_service: ConexionLaboralService = Depends(obtener_conexion_laboral_service)
 ):
-    """Funcion para crear conexion laboral medianter la aceptacion de una postulacion"""
+    """Funcion para crear conexion laboral mediante la aceptacion de una postulacion"""
 
     usuario_id = usuario_service.obtener_usuario_id(token)
 
@@ -152,8 +154,8 @@ async def crear_conexion_laboral_postulacion(
 
 @empleador_router.get("/buscar-conexiones-laboorales",response_model=List[ConexionLaboralEmpleador])
 async def buscar_conexiones_laborales(
-    offset: int = 0,
     busqueda: str | None = None,
+    offset: int = 0,
     token: str = Depends(oauth2_scheme),
     usuario_service: UsuarioService = Depends(obtener_usuario_service),
     conexion_laboral_service: ConexionLaboralService = Depends(obtener_conexion_laboral_service)
@@ -171,8 +173,8 @@ async def buscar_conexiones_laborales(
 @empleador_router.get("/verificar-conexion-laboral",response_model= ConexionLaboralEmpleador | None)
 async def verificar_conexion_laboral(
     postulante_id: int,
-    token: str = Depends(oauth2_scheme),
     oferta_id: int | None = None,
+    token: str = Depends(oauth2_scheme),
     usuario_service: UsuarioService = Depends(obtener_usuario_service),
     conexion_laboral_service: ConexionLaboralService = Depends(obtener_conexion_laboral_service)
 ):

@@ -119,6 +119,23 @@ def test_iniciar_sesion_email_inexistente(client):
 
     assert response.status_code == 401
 
+def test_iniciar_sesion_usuario_baneado(client):
+
+
+    datos_login = {
+            "email": "test.postulante@example.com",
+            "password": "password123"
+        }
+
+    response = client.post(
+        "/autenticacion/login/",
+        json=datos_login
+    )
+
+    print(response.json())
+
+    assert response.status_code == 403
+
 
 def test_registrar_empleador_correctamente(client):
 

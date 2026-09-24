@@ -467,7 +467,7 @@ def test_banear_usuario_correctamente(client):
     response = client.put(
         "/administrador/banear-usuario",
         params={
-            "banear_usuario_id": 7
+            "banear_usuario_id": 1
         },
         headers={"Authorization": f"Bearer {token}"}
     )

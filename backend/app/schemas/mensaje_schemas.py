@@ -37,9 +37,3 @@ class MensajeList(BaseModel):
     mensajes: List[MensajeChat] | None = None
 
 
-class MensajeStateUpdate(BaseModel):
-    """Contrato que actualiza el estado de visto de mensaje"""
-
-    id_conversacion: int
-
-    usuario_id: int

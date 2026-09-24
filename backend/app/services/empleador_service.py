@@ -67,19 +67,23 @@ class EmpleadorService:
 
         return self.empleador_dao.perfil_empleador(empleador.id)
 
-    def buscar_empleadores(self,filtros: EmpleadorFiltro):
+    def buscar_empleadores(self,
+                           filtros: EmpleadorFiltro,
+                           busqueda: str | None = None,
+                           offset: int = 0):
         """Metodo para filtrar empleadores"""
 
 
         return (self.empleador_dao.filtrar_empleadores(
-                busqueda= filtros.busqueda
-                        if filtros.busqueda else None,
+                busqueda= busqueda
+                        if busqueda else None,
                 direccion= filtros.direccion
                         if filtros.direccion else None,
                 ubicacion = filtros.ubicacion
                         if filtros.ubicacion else None,
                 rubro= filtros.rubro
-                        if  filtros.rubro else None
+                        if  filtros.rubro else None,
+                offset=offset
             )
         )
 

@@ -1,6 +1,6 @@
 from datetime import date
 from typing import Literal
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 
 
 class EstudioCreate(BaseModel):
@@ -76,6 +76,7 @@ class EstudioUpdate(BaseModel):
 
 class EstudioPerfil(BaseModel):
     """Contrato que muestra un estudio del postulante."""
+    model_config = ConfigDict(from_attributes=True)
 
     id: int
 

@@ -47,7 +47,6 @@ async def buscar_postulantes(
 ):
     """Funcion para buscar postulantes"""
 
-    print(habilidades)
     return postulante_service.buscar_postulantes(filtros,habilidades,offset)
 
 @postulante_router.put("/actualizar-postulante")
@@ -213,8 +212,8 @@ async def eliminar_habilidad(
 
 @postulante_router.get("/mis-postulaciones",response_model=List[PostulacionPostulante])
 async def filtrar_postulaciones(
-    offset: int,
     busqueda: str | None = None,
+    offset: int = 0,
     token: str = Depends(oauth2_scheme),
     usuario_service: UsuarioService = Depends(obtener_usuario_service),
     postulante_service: PostulanteService = Depends(obtener_postulante_service)
@@ -298,9 +297,9 @@ async def verificar_conexion_laboral(
 
 @postulante_router.get("/buscar-solicitudes-laborales",response_model=List[ConexionLaboralPostulante])
 async def buscar_conexiones_laborales(
+    busqueda: str | None = None,
     offset: int = 0,
     token: str = Depends(oauth2_scheme),
-    busqueda: str | None = None,
     conexion_laboral_service: ConexionLaboralService = Depends(obtener_conexion_laboral_service),
     usuario_service: UsuarioService = Depends(obtener_usuario_service)
 ):

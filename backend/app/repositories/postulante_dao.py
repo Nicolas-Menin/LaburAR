@@ -4,6 +4,7 @@ from backend.app.models.postulante import Postulante
 from backend.app.models.estudio import Estudio
 from backend.app.models.experiencia_laboral import ExperienciaLaboral
 from backend.app.models.habilidad import Habilidad
+from backend.app.models.usuario import Usuario
 
 class PostulanteDAO:
     """Clase encargada del acceso a los datos de postulante"""
@@ -63,7 +64,9 @@ class PostulanteDAO:
         ):
         """Metodo para filtrar postulantes"""
 
-        query = self.db.query(Postulante)
+        query = self.db.query(Postulante).join(
+            Usuario, Postulante.usuario_id == Usuario.id
+        ).filter(Usuario.estado == "ACTIVO")
 
         if busqueda is not None:
             query = query.filter(

@@ -1,5 +1,5 @@
 from backend.app.repositories.mensaje_dao import MensajeDAO
-from backend.app.schemas.mensaje_schemas import MensajeCreate, MensajeStateUpdate
+from backend.app.schemas.mensaje_schemas import MensajeCreate
 from backend.app.models.mensaje import Mensaje
 
 
@@ -32,14 +32,14 @@ class MensajeService:
             "mensajes": mensajes
         }
 
-    def actualizar_estados_mensajes(self,datos: MensajeStateUpdate):
+    def actualizar_estados_mensajes(self,conversacion_id: int,usuario_id:int):
         """Metodo para actualizar el estado de leido del mensaje"""
 
-        mensajes = self.mensaje_dao.listar_mensajes(datos.id_conversacion)
+        mensajes = self.mensaje_dao.listar_mensajes(conversacion_id)
 
         for mensaje in mensajes:
 
-            if mensaje.remitente_id != datos.usuario_id and not mensaje.leido:
+            if mensaje.remitente_id != usuario_id and not mensaje.leido:
                 mensaje.leido = True
 
         return self.mensaje_dao.actualizar_estados_mensajes()

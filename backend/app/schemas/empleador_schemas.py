@@ -135,8 +135,6 @@ class EmpleadorSearch(BaseModel):
 class EmpleadorFiltro(BaseModel):
     """Contrato de filtro de empleadores"""
 
-    busqueda: str | None = None
-
     direccion: str | None = None
 
     ubicacion: str | None = None

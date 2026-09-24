@@ -141,8 +141,6 @@ def test_enviar_mensaje_a_postulante(client):
 
             mensaje = websocket_postulante.receive_json()
 
-            print(mensaje)
-
             assert mensaje["contenido"] == "Hola postulante"
             assert mensaje["leido"] is False
 

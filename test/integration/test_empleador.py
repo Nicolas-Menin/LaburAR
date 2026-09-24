@@ -44,9 +44,10 @@ def test_buscar_empleadores_sin_filtros(client):
 def test_buscar_empleadores_por_ubicacion(client):
     response = client.get(
         "/empleador/buscar-empleadores",
-        params={"ubicacion": "Bahia Blanca"}
+        params={"ubicacion": "Punta Alta"}
     )
 
+    print(response.json())
     assert response.status_code == 200
     assert isinstance(response.json(), list)
 

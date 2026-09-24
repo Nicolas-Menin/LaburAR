@@ -2,7 +2,7 @@ from typing import Literal, List
 from sqlalchemy.orm import Session
 from backend.app.models.oferta_laboral import OfertaLaboral
 from backend.app.models.empleador import Empleador
-
+from backend.app.models.usuario import Usuario
 
 class OfertaLaboralDAO:
     """Clase encargada del acceso a los datos de oferta laboral"""
@@ -88,7 +88,12 @@ class OfertaLaboralDAO:
             OfertaLaboral.descripcion.label("descripcion"),
             Empleador.foto_perfil.label("foto_perfil_empleador")
         ).join(Empleador,
-               OfertaLaboral.empleador_id == Empleador.id)
+               OfertaLaboral.empleador_id == Empleador.id
+            ).join(Usuario,
+                   Empleador.usuario_id == Usuario.id
+                ).filter(
+                    Usuario.estado == "ACTIVO"
+                )
 
         if busqueda:
             query = query.filter(

@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends,WebSocket
 from starlette.websockets import WebSocketDisconnect
 from backend.app.websoscket.conexiones_websocket import conexion_websocket
-from backend.app.schemas.mensaje_schemas import MensajeCreate,MensajeList, MensajeStateUpdate
+from backend.app.schemas.mensaje_schemas import MensajeCreate,MensajeList
 from backend.app.services.mensaje_service import MensajeService
 from backend.app.services.usuario_service import UsuarioService
 from backend.app.dependencies.usuario import obtener_usuario_service
@@ -50,7 +50,7 @@ async def conectar_chat(
             )
 
             for usuario_id,conexion in conexiones:
-                print("ENVIANDO MENSAJE")
+
                 if usuario_id != mensaje.remitente_id:
 
                     await conexion.send_json({
@@ -80,13 +80,16 @@ async def listar_mennsajes(
 
 @mensaje_router.put("/actualizar-estado-mensajes")
 async def actualizar_estado_mensajes(
-    datos: MensajeStateUpdate,
+    conversacion_id: int,
+    token: str = Depends(oauth2_scheme),
+    usuario_service: UsuarioService = Depends(obtener_usuario_service),
     mensaje_service: MensajeService = Depends(obtener_mensaje_service)
 ):
     """Funcion para actualizar el estado de mensajes"""
 
+    usuario_id = usuario_service.obtener_usuario_id(token)
 
-    return mensaje_service.actualizar_estados_mensajes(datos)
+    return mensaje_service.actualizar_estados_mensajes(conversacion_id,usuario_id)
 
 @mensaje_router.get("/mensajes-no-leidos")
 async def verificar_mensajes_no_leidos(

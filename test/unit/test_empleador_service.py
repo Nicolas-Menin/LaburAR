@@ -183,16 +183,17 @@ def test_buscar_empleadores_con_filtros():
     )
 
     filtros = Mock()
-    filtros.busqueda = "Juan"
     filtros.direccion = "Calle 123"
     filtros.ubicacion = "Punta Alta"
     filtros.rubro = "Construccion"
+
+    busqueda = "Juan"
 
     empleadores = ["empleador1", "empleador2"]
 
     empleador_dao.filtrar_empleadores.return_value = empleadores
 
-    resultado = empleador_service.buscar_empleadores(filtros)
+    resultado = empleador_service.buscar_empleadores(filtros,busqueda)
 
     assert resultado == empleadores
 
@@ -212,16 +213,15 @@ def test_buscar_empleadores_sin_filtros():
     )
 
     filtros = Mock()
-    filtros.busqueda = None
     filtros.direccion = None
     filtros.ubicacion = None
     filtros.rubro = None
-
+    busqueda = "Juan"
     empleadores = []
 
     empleador_dao.filtrar_empleadores.return_value = empleadores
 
-    resultado = empleador_service.buscar_empleadores(filtros)
+    resultado = empleador_service.buscar_empleadores(filtros,busqueda)
 
     assert resultado == empleadores
 
