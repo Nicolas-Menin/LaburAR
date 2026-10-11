@@ -55,4 +55,4 @@ class TokenService:
         if datos["type"] != "password_reset":
             raise HTTPException(401,"Token de recuperacion invalido")
 
-        return datos["sub"]
+        return int(datos["sub"])
