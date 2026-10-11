@@ -148,7 +148,7 @@ class UsuarioService:
             raise HTTPException(404,"Usuario no encontrado")
 
         payload = {
-            "sub": usuario.id,
+            "sub": str(usuario.id),
             "type": "password_reset",
             "exp": datetime.now(timezone.utc) + timedelta(minutes=10)
         }

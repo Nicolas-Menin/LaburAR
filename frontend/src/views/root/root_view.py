@@ -143,7 +143,7 @@ class RootView:
             self.mensajeria.detener_verificacion_conversaciones()
 
         self.page.views.clear()
-        print(f"RUTA PUBLICA: {route in self.RUTAS_PUBLICAS}")
+
         if route not in self.RUTAS_PUBLICAS:
             token = Sesion.token(self.page)
 
