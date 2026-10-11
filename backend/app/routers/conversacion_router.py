@@ -26,6 +26,7 @@ async def traer_conversaciones_postulante(
 
 @conversacion_router.get("/traer-conversaciones-empleador",response_model=List[ConversacionResponseEmpleador])
 async def traer_conversaciones_empleador(
+    oferta_id: int | None = None,
     token: str = Depends(oauth2_scheme),
     conversacion_service: ConversacionService = Depends(obtener_conversacion_service),
     usuario_service: UsuarioService = Depends(obtener_usuario_service)
@@ -35,4 +36,4 @@ async def traer_conversaciones_empleador(
 
     usuario_id = usuario_service.obtener_usuario_id(token)
 
-    return conversacion_service.traer_conversacion_empleador(usuario_id)
+    return conversacion_service.traer_conversacion_empleador(usuario_id,oferta_id)

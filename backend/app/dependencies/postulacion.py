@@ -5,6 +5,8 @@ from backend.app.repositories.postulacion_dao import PostulacionDAO
 from backend.app.repositories.postulante_dao import PostulanteDAO
 from backend.app.repositories.oferta_laboral_dao import OfertaLaboralDAO
 from backend.app.repositories.empleador_dao import EmpleadorDAO
+from backend.app.repositories.conexion_laboral_dao import ConexionLaboralDAO
+from backend.app.repositories.conversacion_dao import ConversacionDAO
 from backend.app.dependencies.database import obtener_sesion_bd
 
 
@@ -21,4 +23,13 @@ def obtener_postulacion_service(
 
     empleador_dao = EmpleadorDAO(db)
 
-    return PostulacionService(postulacion_dao,oferta_laboral_dao,postulante_dao,empleador_dao)
+    conexion_laboral_dao = ConexionLaboralDAO(db)
+
+    conversacion_dao = ConversacionDAO(db)
+
+
+    return PostulacionService(
+        postulacion_dao,oferta_laboral_dao,
+        postulante_dao,empleador_dao,
+        conexion_laboral_dao,conversacion_dao
+        )

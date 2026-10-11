@@ -44,3 +44,15 @@ sender = os.getenv("SENDER")
 
 # URL DEL SERVIDOR DE LA API
 API_URL = os.getenv("API_URL")
+
+#FRONTEND URL
+FRONTEND_URL = os.getenv("FRONTEND_URL")
+
+#LOCAL URL
+LOCAL_URL = os.getenv("LOCAL_URL")
+
+RUTAS_PERITIDAS = [
+    FRONTEND_URL,
+    API_URL,
+    LOCAL_URL
+]

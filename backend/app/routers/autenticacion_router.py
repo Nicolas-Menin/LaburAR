@@ -2,9 +2,8 @@ from fastapi import APIRouter, Depends
 from backend.app.schemas.postulante_schemas import RegistroPostulante
 from backend.app.schemas.empleador_schemas import RegistroEmpleador
 from backend.app.services.usuario_service import UsuarioService
-from backend.app.schemas.usuario_schemas import UsuarioLogin, UsuarioEmail,TokenResponse
+from backend.app.schemas.usuario_schemas import UsuarioLogin, UsuarioEmail,TokenResponse, PasswordUpdate
 from backend.app.dependencies.usuario import obtener_usuario_service
-
 #ROUTER DE AUTENTICACION
 autenticacion_router = APIRouter(prefix="/autenticacion",tags=["Autenticacion"])
 
@@ -29,7 +28,7 @@ async def registrar_empleador(
     return usuario_service.registrar_empleador(empleador)
 
 
-@autenticacion_router.post("/login/",response_model=TokenResponse)
+@autenticacion_router.post("/login",response_model=TokenResponse)
 async def iniciar_sesion(
     usuario: UsuarioLogin,
     usuario_service: UsuarioService = Depends(obtener_usuario_service)
@@ -46,6 +45,21 @@ async def recuperar_contrasena(
     datos: UsuarioEmail,
     usuario_service: UsuarioService = Depends(obtener_usuario_service)
     ):
-    """Funcion para restablecer contraseña del usuario"""
+    """Funcion para enviar email de recuperacion de contraseña del usuario"""
 
     return usuario_service.recuperacion_contrasena(datos.email)
+
+@autenticacion_router.put("/restablecer-contraseña")
+async def restablecer_contrasena(
+    datos: PasswordUpdate,
+    token: str ,
+    usuario_service: UsuarioService = Depends(obtener_usuario_service)
+):
+    """Fucncion para restblacer contraseña de usuario"""
+
+    usuario_id = usuario_service.decodificar_token_recuperacion(token)
+
+    return usuario_service.restablecer_contrasena(
+        usuario_id=usuario_id,
+        nueva_contrasena=datos.nueva_contrasena
+    )

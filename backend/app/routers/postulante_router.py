@@ -1,4 +1,4 @@
-from typing import List, Literal
+from typing import List
 from fastapi import APIRouter, Depends,Query
 from backend.app.services.postulante_service import PostulanteService
 from backend.app.dependencies.postulante import obtener_postulante_service
@@ -9,18 +9,19 @@ from backend.app.dependencies.conexion_laboral import obtener_conexion_laboral_s
 from backend.app.services.conexion_laboral_service import ConexionLaboralService
 from backend.app.services.usuario_service import UsuarioService
 from backend.app.services.postulacion_service import PostulacionService
-from backend.app.schemas.conexion_laboral_schemas import ConexionLaboralPostulante
+from backend.app.schemas.conexion_laboral_schemas import ConexionLaboralPostulante,ConexionLaboralUpdate
 from backend.app.dependencies.postulacion import obtener_postulacion_service
 from backend.app.schemas.estudio_schemas import EstudioCreate, EstudioUpdate
 from backend.app.schemas.experiencia_laboral_schemas import (ExperienciaLaboralCreate,
                                                              ExperienciaLaboralUpdate)
 from backend.app.schemas.habilidad_schemas import HabilidadCreate
-from backend.app.schemas.postulacion_schemas import PostulacionPostulante
+from backend.app.schemas.postulacion_schemas import PostulacionPostulante,PostulacionCreate
 from backend.app.core.security import oauth2_scheme
 
 
 #ROUTER DE POSTULANTE
 postulante_router = APIRouter(prefix="/postulante",tags=["Postulante"])
+
 
 
 @postulante_router.get("/perfil",response_model=PostulantePerfil)
@@ -53,8 +54,6 @@ async def buscar_postulantes(
 
 async def actualizar_postulante(
     datos: PostulanteUpdate,
-    foto_perfil: str | None = None,
-    cv: str | None = None,
     token:  str = Depends(oauth2_scheme),
     usuario_service: UsuarioService = Depends(obtener_usuario_service),
     postulante_service: PostulanteService = Depends(obtener_postulante_service)
@@ -66,8 +65,8 @@ async def actualizar_postulante(
     return postulante_service.actualizar_postulante(
         datos=datos,
         usuario_id=usuario_id,
-        foto_perfil=foto_perfil,
-        cv =  cv
+        foto_perfil=datos.foto_perfil,
+        cv =  datos.cv
     )
 
 @postulante_router.post("/crear-estudio")
@@ -230,7 +229,7 @@ async def filtrar_postulaciones(
 
 @postulante_router.post("/crear-postulacion")
 async def crear_postulacion(
-    oferta_id: int,
+    datos: PostulacionCreate,
     token: str =  Depends(oauth2_scheme),
     usuario_service: UsuarioService = Depends(obtener_usuario_service),
     postulacion_service: PostulacionService = Depends(obtener_postulacion_service)
@@ -241,7 +240,7 @@ async def crear_postulacion(
 
     return postulacion_service.crear_postulacion(
         usuario_id=usuario_id,
-        oferta_id=oferta_id
+        oferta_id=datos.oferta_id
     )
 
 @postulante_router.get("/verificar-postulacion",response_model=PostulacionPostulante | None)
@@ -262,8 +261,7 @@ async def verificar_postulacion(
 
 @postulante_router.put("/actualizar-solicitud-laboral")
 async def actualizar_conexion_laboral(
-    conexion_laboral_id: int,
-    estado: Literal["ACEPTADA","RECHAZADA"],
+    datos: ConexionLaboralUpdate,
     token: str = Depends(oauth2_scheme),
     usuario_service: UsuarioService = Depends(obtener_usuario_service),
     conexion_laboral_service: ConexionLaboralService = Depends(obtener_conexion_laboral_service)
@@ -275,8 +273,8 @@ async def actualizar_conexion_laboral(
 
     return conexion_laboral_service.actualizar_conexion_laboral_estado(
         usuario_id=usuario_id,
-        conexion_laboral_id=conexion_laboral_id,
-        estado=estado
+        conexion_laboral_id=datos.conexion_laboral_id,
+        estado=datos.estado
     )
 
 @postulante_router.get("/verificar-conexion-laboral",response_model=ConexionLaboralPostulante | None)
@@ -313,3 +311,13 @@ async def buscar_conexiones_laborales(
         busqueda=busqueda,
         offset=offset
     )
+
+
+@postulante_router.get("/{postulante_id}",response_model=PostulantePerfil)
+async def obtener_postulante_por_id(
+    postulante_id: int,
+    postulante_service: PostulanteService = Depends(obtener_postulante_service)
+):
+    """Funcion para obtener el perfil publico de un postulante por su id"""
+
+    return postulante_service.obtener_por_postulante_id(postulante_id)
