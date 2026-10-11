@@ -113,7 +113,6 @@ def test_actualizar_empleador_con_foto():
     resultado = empleador_service.actualizar_empleador(
         datos=datos,
         usuario_id=1,
-        foto_perfil="foto.jpg"
     )
 
     assert resultado == empleador

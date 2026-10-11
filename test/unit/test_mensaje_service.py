@@ -76,11 +76,13 @@ def test_actualizar_estados_mensajes_correctamente():
 
     mensaje_dao.actualizar_estados_mensajes.return_value = mensajes_actualizados
 
-    datos = Mock()
-    datos.id_conversacion = 10
-    datos.usuario_id = 1
+    id_conversacion = 10
+    usuario_id = 1
 
-    resultado = mensaje_service.actualizar_estados_mensajes(datos)
+    resultado = mensaje_service.actualizar_estados_mensajes(
+        conversacion_id=id_conversacion,
+        usuario_id=usuario_id
+    )
 
     assert mensaje_no_leido.leido is True
     assert mensaje_propio.leido is False

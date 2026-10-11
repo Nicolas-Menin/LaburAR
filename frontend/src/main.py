@@ -1,21 +1,15 @@
 import flet as ft
-from frontend.src.core.config import API_URL
-# pylint: disable=E1121,E1123,E0401
+from frontend.src.views.root.root_view import RootView
 
 
-def main(page: ft.Page):
-    page.title = "LaburAR"
-    page.window.width = 1200
-    page.window.height = 800
+async def main(page: ft.Page):
 
-    page.add(
-        ft.Text(
-            f"Backend: {API_URL}",
-            size=32,
-            weight=ft.FontWeight.BOLD,
-        )
-    )
+    root = RootView(page)
+
+    await page.push_route("/login")
+
+    return root
 
 
 if __name__ == "__main__":
-    ft.run(main)
+    ft.run(main, assets_dir="frontend/src/assets")

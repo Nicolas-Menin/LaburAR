@@ -11,12 +11,16 @@ def test_crear_postulacion_ya_existente():
     oferta_laboral_dao = Mock()
     postulante_dao = Mock()
     empleador_dao = Mock()
+    conexion_laboral_dao = Mock()
+    conversacion_dao = Mock()
 
     service = PostulacionService(
         postulacion_dao=postulacion_dao,
         oferta_laboral_dao=oferta_laboral_dao,
         postulante_dao=postulante_dao,
-        empleador_dao=empleador_dao
+        empleador_dao=empleador_dao,
+        conexion_laboral_dao=conexion_laboral_dao,
+        conversacion_dao=conversacion_dao
     )
 
     postulante = Mock()
@@ -51,12 +55,16 @@ def test_crear_postulacion_rechazada_vuelve_a_pendiente():
     oferta_laboral_dao = Mock()
     postulante_dao = Mock()
     empleador_dao = Mock()
+    conexion_laboral_dao = Mock()
+    conversacion_dao = Mock()
 
     service = PostulacionService(
         postulacion_dao=postulacion_dao,
         oferta_laboral_dao=oferta_laboral_dao,
         postulante_dao=postulante_dao,
-        empleador_dao=empleador_dao
+        empleador_dao=empleador_dao,
+        conexion_laboral_dao=conexion_laboral_dao,
+        conversacion_dao=conversacion_dao
     )
 
     postulante = Mock()
@@ -95,12 +103,16 @@ def test_crear_postulacion_correctamente():
     oferta_laboral_dao = Mock()
     postulante_dao = Mock()
     empleador_dao = Mock()
+    conexion_laboral_dao = Mock()
+    conversacion_dao = Mock()
 
     service = PostulacionService(
         postulacion_dao=postulacion_dao,
         oferta_laboral_dao=oferta_laboral_dao,
         postulante_dao=postulante_dao,
-        empleador_dao=empleador_dao
+        empleador_dao=empleador_dao,
+        conexion_laboral_dao=conexion_laboral_dao,
+        conversacion_dao=conversacion_dao
     )
 
     postulante = Mock()
@@ -143,12 +155,16 @@ def test_verificar_postulacion_existente():
     oferta_laboral_dao = Mock()
     postulante_dao = Mock()
     empleador_dao = Mock()
+    conexion_laboral_dao = Mock()
+    conversacion_dao = Mock()
 
     service = PostulacionService(
         postulacion_dao=postulacion_dao,
         oferta_laboral_dao=oferta_laboral_dao,
         postulante_dao=postulante_dao,
-        empleador_dao=empleador_dao
+        empleador_dao=empleador_dao,
+        conexion_laboral_dao=conexion_laboral_dao,
+        conversacion_dao=conversacion_dao
     )
 
     postulante = Mock()
@@ -173,14 +189,17 @@ def test_verificar_postulacion_inexistente():
     oferta_laboral_dao = Mock()
     postulante_dao = Mock()
     empleador_dao = Mock()
+    conexion_laboral_dao = Mock()
+    conversacion_dao = Mock()
 
     service = PostulacionService(
         postulacion_dao=postulacion_dao,
         oferta_laboral_dao=oferta_laboral_dao,
         postulante_dao=postulante_dao,
-        empleador_dao=empleador_dao
+        empleador_dao=empleador_dao,
+        conexion_laboral_dao=conexion_laboral_dao,
+        conversacion_dao=conversacion_dao
     )
-
     postulante = Mock()
     postulante.id = 1
 
@@ -200,12 +219,16 @@ def test_listar_postulaciones_postulante():
     oferta_laboral_dao = Mock()
     postulante_dao = Mock()
     empleador_dao = Mock()
+    conexion_laboral_dao = Mock()
+    conversacion_dao = Mock()
 
     service = PostulacionService(
         postulacion_dao=postulacion_dao,
         oferta_laboral_dao=oferta_laboral_dao,
         postulante_dao=postulante_dao,
-        empleador_dao=empleador_dao
+        empleador_dao=empleador_dao,
+        conexion_laboral_dao=conexion_laboral_dao,
+        conversacion_dao=conversacion_dao
     )
 
     postulaciones = [Mock(), Mock()]
@@ -234,12 +257,16 @@ def test_listar_postulaciones_empleador():
     oferta_laboral_dao = Mock()
     postulante_dao = Mock()
     empleador_dao = Mock()
+    conexion_laboral_dao = Mock()
+    conversacion_dao = Mock()
 
     service = PostulacionService(
         postulacion_dao=postulacion_dao,
         oferta_laboral_dao=oferta_laboral_dao,
         postulante_dao=postulante_dao,
-        empleador_dao=empleador_dao
+        empleador_dao=empleador_dao,
+        conexion_laboral_dao=conexion_laboral_dao,
+        conversacion_dao=conversacion_dao
     )
 
     postulaciones = [Mock(), Mock()]
@@ -270,12 +297,16 @@ def test_listar_postulaciones_empleador_sin_oferta():
     oferta_laboral_dao = Mock()
     postulante_dao = Mock()
     empleador_dao = Mock()
+    conexion_laboral_dao = Mock()
+    conversacion_dao = Mock()
 
     service = PostulacionService(
         postulacion_dao=postulacion_dao,
         oferta_laboral_dao=oferta_laboral_dao,
         postulante_dao=postulante_dao,
-        empleador_dao=empleador_dao
+        empleador_dao=empleador_dao,
+        conexion_laboral_dao=conexion_laboral_dao,
+        conversacion_dao=conversacion_dao
     )
 
     postulaciones = [Mock(), Mock()]
