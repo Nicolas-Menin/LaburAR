@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
 from backend.app.models.empleador import Empleador
 from backend.app.models.usuario import Usuario
+from backend.app.models.oferta_laboral import OfertaLaboral
 class EmpleadorDAO:
     """Clase encargada del acceso a los datos de empleador"""
 
@@ -35,11 +36,12 @@ class EmpleadorDAO:
         """Metodo para perfil de empleador"""
 
         return (
-            self.db.query(Empleador)
-            .filter(Empleador.id == empleador_id)
-            .first()
-        )
-
+            self.db.query(
+                Empleador
+            ).filter(
+                Empleador.id == empleador_id
+            )
+        ).first()
 
     def listar_empleadores(self,offset: int = 0, limit: int = 10):
         """Metodo para traer empleadores """
@@ -69,7 +71,7 @@ class EmpleadorDAO:
         ).filter(Usuario.estado == "ACTIVO")
 
         if busqueda:
-            query = query.filter(Empleador.nombre_negocio.ilike(busqueda))
+            query = query.filter(Empleador.nombre_negocio.ilike(f"%{busqueda}%"))
 
         if direccion:
             query = query.filter(Empleador.direccion.ilike(direccion))

@@ -1,3 +1,4 @@
+from typing import Literal
 from fastapi import HTTPException
 from backend.app.repositories.empleador_dao import EmpleadorDAO
 from backend.app.schemas.empleador_schemas import EmpleadorUpdate, EmpleadorFiltro
@@ -26,7 +27,6 @@ class EmpleadorService:
         self,
         datos: EmpleadorUpdate,
         usuario_id: int,
-        foto_perfil: str | None = None,
         ):
         """Metodo para actualizar los datos del empleador"""
 
@@ -50,8 +50,8 @@ class EmpleadorService:
         if datos.rubro is not None:
             empleador.rubro = datos.rubro
 
-        if foto_perfil is not None:
-            foto_url = self.cloudinary_service.actualizar_foto_perfil(foto_perfil,usuario_id)
+        if datos.foto_perfil is not None:
+            foto_url = self.cloudinary_service.actualizar_foto_perfil(datos.foto_perfil,usuario_id)
             empleador.foto_perfil = foto_url
 
         return self.empleador_dao.actualizar_empleador(empleador)
@@ -66,6 +66,22 @@ class EmpleadorService:
             raise HTTPException(404, "Empleador no encontrado")
 
         return self.empleador_dao.perfil_empleador(empleador.id)
+
+    def obtener_por_empleador_id(self,empleador_id:int):
+        """Metodo para obtener datos de empleador mediante su id"""
+
+
+        empleador = self.empleador_dao.perfil_empleador(empleador_id)
+
+        if not empleador:
+            raise HTTPException(404, "Empleador no encontrado")
+
+        return empleador
+
+    def buscar_por_usuario_id(self,usuario_id:int):
+        """Metodo para buscar postulante mediante el id del usuario"""
+
+        return self.empleador_dao.buscar_por_id(usuario_id)
 
     def buscar_empleadores(self,
                            filtros: EmpleadorFiltro,
@@ -109,6 +125,22 @@ class EmpleadorService:
             oferta_id
         )
 
+    def actualizar_estado_postulacion(
+        self,
+        usuario_id: int,
+        oferta_id: int,
+        postulacion_id: int,
+        estado: Literal["ACEPTADA", "RECHAZADA"]
+    ):
+        """Metodo para actualizar el estado de postulacion de una oferta laboral"""
+
+        return self.postulacion_service.actualizar_estado_postulacion(
+            usuario_id,
+            postulacion_id,
+            oferta_id,
+            estado
+        )
+
     def crear_oferta_laboral(self,datos: OfertaLaboralCreate,usuario_id: int):
         """Metodo para crear oferta laboral"""
 
@@ -140,6 +172,26 @@ class EmpleadorService:
         )
 
         return self.oferta_laboral_dao.crear_oferta_laboral(oferta_laboral)
+
+    def listar_ofertas_laborales(self,usuario_id: int,busqueda: str | None = None):
+
+        empleador = self.empleador_dao.buscar_por_id(usuario_id)
+
+        if not empleador:
+            raise HTTPException(404, "No existe este empleador")
+
+        return self.oferta_laboral_dao.listar_ofertas_laborales(empleador.id,busqueda)
+
+    def verificar_conexion_por_oferta(self,usuario_id:int, postulante_id: int):
+        """Metodo que verifica  que ofertas laborales NO poseen una conexion laboral"""
+
+        empleador = self.empleador_dao.buscar_por_id(usuario_id)
+
+        if not empleador:
+            raise HTTPException(404, "No existe este empleador")
+
+
+        return self.oferta_laboral_dao.verificar_conexion_por_oferta(empleador.id,postulante_id)
 
 
     def actualizar_oferta_laboral(self,datos: OfertaLaboralUpdate,oferta_laboral_id:int,usuario_id: int):

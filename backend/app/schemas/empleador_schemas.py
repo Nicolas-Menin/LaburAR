@@ -83,6 +83,8 @@ class EmpleadorUpdate(BaseModel):
         description="Rubro del negocio o empleador"
     )
 
+    foto_perfil: str | None = None
+
 
 
 class EmpleadorPerfil(BaseModel):
@@ -90,6 +92,8 @@ class EmpleadorPerfil(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     id: int
+
+    usuario_id: int
 
     nombre_negocio: str
 

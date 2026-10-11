@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from backend.app.models.oferta_laboral import OfertaLaboral
 from backend.app.models.empleador import Empleador
 from backend.app.models.usuario import Usuario
-
+from backend.app.models.conexion_laboral import ConexionLaboral
 class OfertaLaboralDAO:
     """Clase encargada del acceso a los datos de oferta laboral"""
 
@@ -37,6 +37,34 @@ class OfertaLaboralDAO:
             OfertaLaboral.id == id_oferta_laboral
         ).first()
 
+    def perfil_oferta_laboral(self,id_oferta_laboral: int):
+        """Metodo para perfil de oferta laboral"""
+
+        return (
+            self.db.query(
+                OfertaLaboral.titulo,
+                OfertaLaboral.descripcion,
+                Empleador.nombre_negocio,
+                Empleador.foto_perfil.label("foto_empleador"),
+                OfertaLaboral.ubicacion,
+                OfertaLaboral.direccion,
+                OfertaLaboral.requisitos,
+                OfertaLaboral.rubro,
+                OfertaLaboral.salario_tipo,
+                OfertaLaboral.salario_minimo,
+                OfertaLaboral.salario_maximo,
+                OfertaLaboral.jornada,
+                OfertaLaboral.turno,
+                OfertaLaboral.dias_laborales,
+                OfertaLaboral.hora_inicio,
+                OfertaLaboral.hora_fin,
+                OfertaLaboral.fecha_creacion
+            ).join(
+                Empleador,
+                OfertaLaboral.empleador_id == Empleador.id
+            ).filter(OfertaLaboral.id == id_oferta_laboral)
+        ).first()
+
     def buscar_por_empleador(self,empleador_id: int,oferta_id:int):
         """Metodo para traer informacion de oferta laboral mediante id"""
 
@@ -44,25 +72,53 @@ class OfertaLaboralDAO:
             OfertaLaboral.id == oferta_id
         ).filter(OfertaLaboral.empleador_id == empleador_id).first()
 
-    def listar_ofertas_laborales(self,offset: int = 0, limit: int = 10):
-        """Metodo para traer ofertas laboraless"""
+    def listar_ofertas_laborales(self,empleador_id: int,busqueda: str | None = None):
+        """Metodo para traer ofertas laboraless de empleador"""
 
-        return (self.db.query(
-            OfertaLaboral.id,
-            OfertaLaboral.empleador_id,
-            OfertaLaboral.titulo,
-            Empleador.nombre_negocio,
-            OfertaLaboral.ubicacion,
-            OfertaLaboral.direccion,
-            OfertaLaboral.descripcion
+        query = (self.db.query(
+            OfertaLaboral.id.label("id"),
+            OfertaLaboral.titulo.label("titulo"),
+            OfertaLaboral.ubicacion.label("ubicacion"),
+            OfertaLaboral.direccion.label("direccion"),
+            OfertaLaboral.estado.label("estado"),
+            OfertaLaboral.descripcion.label("descripcion"),
+            Empleador.foto_perfil.label("foto_perfil_empleador"),
+            OfertaLaboral.fecha_creacion.label("fecha_creacion")
             ).join(Empleador,
                    OfertaLaboral.empleador_id == Empleador.id
-            )
-            .offset(offset)
-            .limit(limit)
-            .all()
+            ).filter(OfertaLaboral.empleador_id == empleador_id)
         )
 
+
+        if busqueda:
+            query = query.filter(OfertaLaboral.titulo.ilike(f"%{busqueda}%"))
+
+        return query.all()
+
+    def verificar_conexion_por_oferta(self,empleador_id:int, postulante_id: int):
+        """Metodo que verifica  que ofertas laborales NO poseen una conexion laboral"""
+        conexiones_existentes = (
+            self.db.query(ConexionLaboral.id)
+            .filter(
+                ConexionLaboral.oferta_id == OfertaLaboral.id,
+                ConexionLaboral.postulante_id == postulante_id,
+                ConexionLaboral.estado.in_(["PENDIENTE", "ACEPTADA"])
+            ).exists()
+        )
+
+        return (self.db.query(
+            OfertaLaboral.id.label("id"),
+            OfertaLaboral.titulo.label("titulo"),
+            OfertaLaboral.ubicacion.label("ubicacion"),
+            OfertaLaboral.direccion.label("direccion"),
+            OfertaLaboral.estado.label("estado"),
+            OfertaLaboral.descripcion.label("descripcion"),
+            Empleador.foto_perfil.label("foto_perfil_empleador"),
+            OfertaLaboral.fecha_creacion.label("fecha_creacion")
+            ).join(Empleador,
+                   OfertaLaboral.empleador_id == Empleador.id)
+            .filter(OfertaLaboral.empleador_id == empleador_id,~conexiones_existentes)
+        )
 
 
     def filtrar_ofertas_laborales(
@@ -93,6 +149,8 @@ class OfertaLaboralDAO:
                    Empleador.usuario_id == Usuario.id
                 ).filter(
                     Usuario.estado == "ACTIVO"
+                ).filter(
+                    OfertaLaboral.estado =="ACTIVA"
                 )
 
         if busqueda:

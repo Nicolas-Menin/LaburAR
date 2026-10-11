@@ -4,6 +4,7 @@ from backend.app.models.conexion_laboral import ConexionLaboral
 from backend.app.models.empleador import Empleador
 from backend.app.models.oferta_laboral import  OfertaLaboral
 from backend.app.models.postulante import Postulante
+from backend.app.models.usuario import Usuario
 
 class ConversacionDAO:
     """Clase encargada del acceso a los datos de conversacion"""
@@ -41,17 +42,24 @@ class ConversacionDAO:
                   ConexionLaboral.empleador_id == Empleador.id)
             .join(OfertaLaboral,
                   ConexionLaboral.oferta_id == OfertaLaboral.id)
+            .join(
+                Usuario,
+                Empleador.usuario_id == Usuario.id
+            )
             .filter(ConexionLaboral.postulante_id == postulante_id)
+            .filter(ConexionLaboral.estado =="ACEPTADA")
+            .filter(Usuario.estado =="ACTIVO")
         ).all()
 
 
     def traer_conversaciones_empleador(
         self,
         empleador_id: int,
+        oferta_id: int | None = None
     ):
         """Metodo para traer conversaciones de empleador"""
 
-        return (
+        query =  (
             self.db.query(Conversacion.id,
                           Postulante.nombre,
                           Postulante.apellido,
@@ -63,7 +71,22 @@ class ConversacionDAO:
                   )
             .join(Postulante,
                   ConexionLaboral.postulante_id == Postulante.id)
+            .join(
+                Usuario,
+                Postulante.usuario_id == Usuario.id
+            )
             .join(OfertaLaboral,
                   ConexionLaboral.oferta_id == OfertaLaboral.id)
             .filter(ConexionLaboral.empleador_id == empleador_id)
-        ).all()
+            .filter(ConexionLaboral.estado =="ACEPTADA")
+            .filter(Usuario.estado =="ACTIVO")
+
+        )
+
+        if oferta_id:
+
+            query = query.filter(
+                OfertaLaboral.id == oferta_id
+            )
+
+        return query.all()

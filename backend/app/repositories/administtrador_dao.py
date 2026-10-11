@@ -39,8 +39,8 @@ class AdministradorDAO:
 
             if busqueda:
                 query = query.filter(
-                    or_(Postulante.nombre.ilike(f"½{busqueda}%"),
-                        Postulante.apellido.ilike(f"½{busqueda}%"),
+                    or_(Postulante.nombre.ilike(f"%{busqueda}%"),
+                        Postulante.apellido.ilike(f"%{busqueda}%"),
                     )
                 )
 
@@ -64,7 +64,7 @@ class AdministradorDAO:
 
             if busqueda:
                 query = query.filter(
-                    Empleador.nombre_negocio.ilike(f"½{busqueda}%")
+                    Empleador.nombre_negocio.ilike(f"%{busqueda}%")
 
                 )
 

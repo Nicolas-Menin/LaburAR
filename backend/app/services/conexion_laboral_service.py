@@ -42,7 +42,7 @@ class ConexionLaboralService:
         if not oferta:
             raise HTTPException(404, "La oferta laboral no existe o no pertenece al empleador")
 
-        postulante = self.postulante_dao.buscar_por_id(postulante_id)
+        postulante = self.postulante_dao.buscar_por_postulante_id(postulante_id)
 
         if not postulante:
             raise HTTPException(404, "El postulante no existe")
@@ -192,12 +192,23 @@ class ConexionLaboralService:
         return self.conexion_laboral_dao.listar_conexiones_laborales_postulante(postulante.id,busqueda,offset)
 
 
-    def traer_conexiones_laborales_empleador(self,usuario_id: int,offset:int,busqueda: str | None = None):
+    def traer_conexiones_laborales_empleador(self,
+                                             usuario_id: int,
+                                             offset:int,
+                                             busqueda: str | None = None,
+                                             oferta_id: int | None = None
+                                             ):
         """"Metodo para traer la lista de conexiones laborales del empleador"""
 
         empleador = self.empleador_dao.buscar_por_id(usuario_id)
 
-        return self.conexion_laboral_dao.listar_conexiones_laborales_empleador(empleador.id,busqueda,offset)
+        return self.conexion_laboral_dao.listar_conexiones_laborales_empleador(
+            empleador.id,
+            busqueda,
+            oferta_id
+                if oferta_id else None,
+            offset,
+            )
 
 
     def verificar_conexion_laboral_postulante(self,usuario_id: int,oferta_id:int):

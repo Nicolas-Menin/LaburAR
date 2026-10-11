@@ -39,6 +39,24 @@ class PostulanteDAO:
             Postulante.usuario_id == usuario_id
             ).first()
 
+    def buscar_por_postulante_id(self, postulante_id: int):
+        return (
+            self.db.query(Postulante)
+            .filter(Postulante.id == postulante_id)
+            .first()
+        )
+
+    def perfil_postulante(self,postulante_id:int):
+        """Metodo para perfil de postulante"""
+
+        return (
+           self.db.query(
+               Postulante
+           ).filter(
+               Postulante.id == postulante_id
+           )
+        ).first()
+
     def listar_postulantes(self,offset: int = 0, limit: int = 10):
         """"Metodo para traer postulantes"""
 
@@ -69,12 +87,15 @@ class PostulanteDAO:
         ).filter(Usuario.estado == "ACTIVO")
 
         if busqueda is not None:
-            query = query.filter(
-                or_(
-                    Postulante.nombre.ilike(f"%{busqueda}%"),
-                    Postulante.apellido.ilike(f"%{busqueda}%")
+
+            for palabra in busqueda.split():
+                patron = palabra
+                query = query.filter(
+                    or_(
+                        Postulante.nombre.ilike(f"%{patron}%"),
+                        Postulante.apellido.ilike(f"%{patron}%")
+                    )
                 )
-            )
 
         if ubicacion is not None:
             query = query.filter(
@@ -112,9 +133,8 @@ class PostulanteDAO:
 
         if disponibilidad is not None:
             query = (
-                query
-                .filter(Postulante.disponibilidad.like(f"{disponibilidad}"))
-            )
+                query.filter(Postulante.disponibilidad == disponibilidad))
+
 
 
         return query.distinct().offset(offset).limit(limit).all()

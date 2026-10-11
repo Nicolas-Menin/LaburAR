@@ -80,8 +80,23 @@ class PostulanteService:
     def perfil_postulante(self, usuario_id: int):
         """Metodo para mostrar perfil del postulante"""
 
+        postulante = self.postulante_dao.buscar_por_id(usuario_id)
+
+        return self.postulante_dao.perfil_postulante(postulante.id)
+
+    def buscar_por_usuario_id(self,usuario_id:int):
+        """Metodo para buscar postulante mediante el id del usuario"""
         return self.postulante_dao.buscar_por_id(usuario_id)
 
+    def obtener_por_postulante_id(self, postulante_id:int):
+        """Metodo para obtener datos de postulante mediante su id"""
+
+        postulante =  self.postulante_dao.perfil_postulante(postulante_id)
+
+        if not postulante:
+            raise HTTPException(404, "Postulante no encontrado")
+
+        return postulante
 
     def buscar_postulantes(self,
                            filtro:PostulanteFiltro,

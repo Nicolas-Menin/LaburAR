@@ -123,9 +123,11 @@ class UsuarioService:
         if not password_verification:
             raise HTTPException(401,"Credenciales invalidas")
 
+        exp = datetime.now(timezone.utc) + timedelta(minutes=10)
 
         payload = {
             "user": usuario.id,
+            "exp": exp
         }
 
         token = self.token_service.crear_token(payload)
@@ -133,7 +135,8 @@ class UsuarioService:
         return {
             "access_token": token,
             "token_type": "Bearer",
-            "rol": usuario.rol
+            "rol": usuario.rol,
+            "exp": exp
         }
 
     def recuperacion_contrasena(self,email: str):
@@ -160,3 +163,21 @@ class UsuarioService:
 
         return self.token_service.decodificar_token(token)
 
+    def decodificar_token_recuperacion(self,token: str):
+        """Metodo que decodifica el token de recuperacion y retorna el usuario id"""
+
+        return self.token_service.decodificar_token_recuperacion(token)
+
+    def restablecer_contrasena(self,usuario_id: int,nueva_contrasena: str):
+
+        usuario = self.usuario_dao.buscar_por_id(usuario_id)
+
+        if not usuario:
+            raise HTTPException(404, "Usuario no encontrado")
+
+        contrasena_hasheada = self.autenticacion_service.password_hash(nueva_contrasena)
+
+        usuario.password_hash = contrasena_hasheada
+
+
+        return self.usuario_dao.actualizar_usuario(usuario)

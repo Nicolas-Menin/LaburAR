@@ -51,6 +51,8 @@ class TokenResponse(BaseModel):
 
     rol: Literal["POSTULANTE","EMPLEADOR","ADMINISTRADOR"]
 
+    exp: datetime
+
 class UsuarioAdministrador(BaseModel):
     """Contrato para visualizar y gestionar usuarios por administrador"""
 
@@ -73,4 +75,8 @@ class UsuarioAdministrador(BaseModel):
     fecha_creacion: datetime
 
     foto_perfil: HttpUrl | None = None
+
+class PasswordUpdate(BaseModel):
+
+    nueva_contrasena: str
 

@@ -1,11 +1,13 @@
 from typing import Literal
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session,aliased
 from sqlalchemy import func
 from backend.app.models.reporte import Reporte
 from backend.app.models.usuario import Usuario
 from backend.app.models.postulante import Postulante
 from backend.app.models.empleador import Empleador
 
+UsuarioReportante = aliased(Usuario)
+UsuarioReportado = aliased(Usuario)
 
 class ReporteDAO:
     """Clase encargada del acceso a los datos de reporte"""
@@ -56,11 +58,22 @@ class ReporteDAO:
                 Reporte.descripcion.label("descripcion"),
                 Usuario.rol.label("tipo_usuario"),
                 Reporte.estado.label("estado"),
+                UsuarioReportante.rol.label("rol_reportante"),
+                Reporte.usuario_id.label("usuario_reportante_id"),
+                UsuarioReportado.rol.label("rol_reportado"),
+                Reporte.usuario_reportado_id.label("usuario_reportado_id"),
                 func.coalesce(
                     Empleador.foto_perfil,
                     Postulante.foto_perfil
                 ).label("foto_perfil"),
-                Reporte.fecha_creacion.label("fecha_creacion")
+                Reporte.fecha_creacion.label("fecha_creacion"),
+            )
+            .join(UsuarioReportante,
+                   Reporte.usuario_id == UsuarioReportante.id
+                  )
+            .join(
+                UsuarioReportado,
+                Reporte.usuario_reportado_id == UsuarioReportado.id
             )
             .join(Usuario,
                   Reporte.usuario_reportado_id == Usuario.id)

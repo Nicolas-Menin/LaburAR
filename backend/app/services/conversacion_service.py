@@ -46,13 +46,14 @@ class ConversacionService:
     def traer_conversacion_empleador(
         self,
         usuario_id: int,
+        oferta_id: int | None = None
     ):
         """Metodo para traer conversaciones de empleador"""
 
         empleador = self.empleador_dao.buscar_por_id(usuario_id)
 
 
-        conversaciones = self.conversacion_dao.traer_conversaciones_empleador(empleador.id)
+        conversaciones = self.conversacion_dao.traer_conversaciones_empleador(empleador.id,oferta_id)
 
         return [{
 

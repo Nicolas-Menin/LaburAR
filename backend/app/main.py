@@ -3,7 +3,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from backend.app.db.base import Base
 from backend.app.db.session import engine
-from backend.app.core.config import API_URL
+from backend.app.core.config import RUTAS_PERITIDAS
 from backend.app.routers.administrador_router import administrador_router
 from backend.app.routers.autenticacion_router import autenticacion_router
 from backend.app.routers.empleador_router import empleador_router
@@ -37,7 +37,9 @@ laburar_api = FastAPI(
 # MIDDLEWARE DE LA API (PARA ACEPTAR METODOS HTTP DE UN ORIGEN ESPECIFICO)
 laburar_api.add_middleware(
     CORSMiddleware,
-    allow_origins=API_URL,
+    allow_origins=[
+        ruta for ruta in RUTAS_PERITIDAS if ruta
+        ],
     allow_methods =["*"],
     allow_headers=["*"]
 )

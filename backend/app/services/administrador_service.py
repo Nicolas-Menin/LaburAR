@@ -35,7 +35,7 @@ class AdministradorService:
 
 
     def moderar_reporte(self,
-                        estado:  Literal["REVISADO","PENDIENTE","SANCIONADO"],
+                        estado:  Literal["REVISADO","SANCIONADO"],
                         reporte_id: int,
                         usuario_id:int
                         ):
@@ -79,6 +79,28 @@ class AdministradorService:
         usuario_desactivado.estado = "DESACTIVADO"
 
         return self.administrador_dao.actualizar_estado_usuario(usuario_desactivado)
+
+    def activar_usuario(self,usuario_id: int, activar_usuario_id: int):
+        """Metodo para activar usuario"""
+
+        usuario = self.usuario_dao.buscar_por_id(usuario_id)
+        if not usuario:
+            raise HTTPException(404, "Usuario no encontrado")
+
+        if usuario.rol != "ADMINISTRADOR":
+            raise HTTPException(401,"Unauthorized: No eres administrador")
+
+        usuario_inactivo = self.usuario_dao.buscar_por_id(activar_usuario_id)
+
+        if not usuario_inactivo:
+            raise HTTPException(404, "Usuario para activar no encontrado")
+
+        if usuario_inactivo.estado == "ACTIVO":
+            raise HTTPException(422, "El usuario ya esta activo")
+
+        usuario_inactivo.estado = "ACTIVO"
+
+        return self.administrador_dao.actualizar_estado_usuario(usuario_inactivo)
 
     def banear_usuario(self,usuario_id:int,banear_usuario_id: int):
         """Metodo para banear usuario"""

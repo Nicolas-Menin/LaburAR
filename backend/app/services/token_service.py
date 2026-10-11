@@ -40,5 +40,19 @@ class TokenService:
             usuario = jwt.decode(token,JWT_KEY,algorithms="HS256")
 
         except JWTError as exc:
-            raise HTTPException(401,"Token invalid") from exc
+            raise HTTPException(401,"Token invalido") from exc
         return usuario["user"]
+
+    def decodificar_token_recuperacion(self,token: str):
+        """Metodo para decodifciar el token"""
+        try:
+            datos = jwt.decode(token,JWT_KEY,algorithms="HS256")
+
+
+        except JWTError as exc:
+            raise HTTPException(401,"Token invalido") from exc
+
+        if datos["type"] != "password_reset":
+            raise HTTPException(401,"Token de recuperacion invalido")
+
+        return datos["sub"]

@@ -43,6 +43,7 @@ class PostulanteCreate(BaseModel):
 
     disponibilidad: Literal["JORNADA_COMPLETA","MEDIA_JORNADA",
                             "FINES_SEMANA","A_CONVENIR"] = Field(
+                                default= None,
                                 description="Disponibilidad laboral del postulante"
                             )
 
@@ -89,11 +90,17 @@ class PostulanteUpdate(BaseModel):
                                 description="Disponibilidad laboral del postulante"
                             )
 
+    foto_perfil: str | None = None
+
+    cv: str | None = None
+
 class PostulantePerfil(BaseModel):
     """Contrato que muestra el perfil completo del postulante."""
     model_config = ConfigDict(from_attributes=True)
 
     id: int
+
+    usuario_id: int
 
     nombre: str
 
@@ -111,6 +118,11 @@ class PostulantePerfil(BaseModel):
         description="Foto de perfil de postulante"
     )
 
+    cv_url : HttpUrl | None = Field(
+        default=None,
+        description="CV de postulante"
+    )
+
     habilidades: List[HabilidadPerfil]  | None = None
 
     estudios: List[EstudioPerfil] | None = None
@@ -122,7 +134,7 @@ class PostulantePerfil(BaseModel):
         "MEDIA_JORNADA",
         "FINES_SEMANA",
         "A_CONVENIR"
-    ]
+    ] | None = None
 
 
 class PostulanteSearch(BaseModel):

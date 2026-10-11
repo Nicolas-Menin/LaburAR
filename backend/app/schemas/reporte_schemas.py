@@ -19,7 +19,7 @@ class ReporteCreate(BaseModel):
     )
 
 class ReporteAdministrador(BaseModel):
-    """Contrato para que el administrado visualice y gestione los reportes."""
+    """Contrato para que el administrador visualice y gestione los reportes."""
 
     id: int
 
@@ -27,13 +27,19 @@ class ReporteAdministrador(BaseModel):
 
     descripcion: str
 
-    tipo_usuario: Literal["POSTULANTE", "EMPLEADOR"]
+    rol_reportante: Literal["POSTULANTE", "EMPLEADOR"]
 
-    estado: Literal["REVISADO","PENDIENTE","SANCIONADO"]
+    usuario_reportante_id: int
+
+    rol_reportado: Literal["POSTULANTE", "EMPLEADOR"]
+
+    usuario_reportado_id: int
+
+    estado: Literal["REVISADO", "PENDIENTE", "SANCIONADO"]
 
     foto_perfil: HttpUrl | None = None
 
-    fecha_creacion:datetime
+    fecha_creacion: datetime
 
 class Reporte(BaseModel):
     """Contrato para que el administrado visualice y gestione los reportes."""
@@ -50,3 +56,21 @@ class Reporte(BaseModel):
 
     foto_perfil: HttpUrl | None = None
 
+
+class EmpleadorReporte(BaseModel):
+
+    nombre_negocio: str
+
+    foto_perfil: HttpUrl | None = None
+
+class PostulanteReporte(BaseModel):
+
+    nombre: str
+
+    apellido: str
+
+    foto_perfil: HttpUrl | None = None
+
+class ReporteUpdate(BaseModel):
+
+    estado:  Literal["REVISADO","SANCIONADO"]

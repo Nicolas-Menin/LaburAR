@@ -8,13 +8,10 @@ class PostulacionCreate(BaseModel):
 
     oferta_id: int
 
-    postulante_id: int
+class PostulacionStateUpdate(BaseModel):
+    """Contrato para actualizar el estado de postulacion"""
 
-    empleador_id: int
-
-    estado: Literal["PENDIENTE", "ACEPTADA", "RECHAZADA"]
-
-
+    estado: Literal["ACEPTADA", "RECHAZADA"]
 
 class PostulacionPostulante(BaseModel):
     """Contrato para visualizar las postulaciones del postulante"""

@@ -125,7 +125,7 @@ class OfertaLaboralUpdate(BaseModel):
         description="Sector donde pertenece la oferta laboral"
     )
 
-    estado: Literal["ACTIVA", "PAUSADA","CERRADA"] = Field(
+    estado: Literal["ACTIVA", "PAUSADA","CERRADA"] | None = Field(
         default= None,
         description="Estado de la postulacion."
     )
@@ -237,11 +237,17 @@ class OfertaLaboralEmpleador(BaseModel):
 
     titulo: str
 
+    ubicacion: str
+
+    direccion: str
+
     estado: Literal["ACTIVA","PAUSADA","CERRADA"]
 
     descripcion: str
 
     fecha_creacion: datetime
+
+    foto_perfil_empleador: HttpUrl | None = None
 
 class OfertaLaboralFiltro(BaseModel):
     """Contrato para filtrar ofertas laborales"""

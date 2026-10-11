@@ -4,6 +4,7 @@ from backend.app.models.postulacion import Postulacion
 from backend.app.models.oferta_laboral import OfertaLaboral
 from backend.app.models.empleador import Empleador
 from backend.app.models.postulante import Postulante
+from backend.app.models.conexion_laboral import ConexionLaboral
 
 
 class PostulacionDAO:
@@ -121,6 +122,20 @@ class PostulacionDAO:
             .filter(Postulacion.oferta_id == oferta_id)
         ).first()
 
+    def buscar_postulacion_empleador(self,
+                                     empleador_id:int,
+                                     oferta_id:int,
+                                     postulacion_id: int
+                                     ):
+        """Metodo para buscar postulacion por parte de empleador"""
+
+        return (
+            self.db.query(Postulacion)
+            .filter(Postulacion.empleador_id == empleador_id)
+            .filter(Postulacion.oferta_id == oferta_id)
+            .filter(Postulacion.id == postulacion_id)
+        ).first()
+
     def actualizar_postulacion(self,postulacion: Postulacion):
         """Metodo para actualizar postulacion de postulante"""
 
@@ -130,6 +145,7 @@ class PostulacionDAO:
         return postulacion
 
     def obtener_postulacion(self,postulante_id: int, oferta_id: int):
+        """Metodo para obtener postulacion filtraondo por postulante y oferta"""
 
         return  (self.db.query(
             Postulacion.id.label("id"),
@@ -152,3 +168,13 @@ class PostulacionDAO:
             .filter(Postulacion.postulante_id == postulante_id)
             .filter(Postulacion.oferta_id == oferta_id)
         ).first()
+
+    def obtener_postulacion_por_postulante_y_oferta(self, postulante_id: int, oferta_id: int):
+        """Metodo para obtener postulacion por el id del postulante y de oferta"""
+
+        return (
+            self.db.query(Postulacion)
+            .filter(Postulacion.postulante_id == postulante_id)
+            .filter(Postulacion.oferta_id == oferta_id)
+            .first()
+        )

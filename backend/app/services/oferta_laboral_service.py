@@ -1,4 +1,5 @@
 from typing import List
+from fastapi import HTTPException
 from backend.app.repositories.oferta_laboral_dao import OfertaLaboralDAO
 from backend.app.schemas.oferta_laboral_schemas import OfertaLaboralFiltro
 
@@ -32,3 +33,13 @@ class OfertaLaboralService:
                 if dias_laborales else None,
             offset=offset
         )
+
+    def obtener_por_oferta_id(self,oferta_id:int):
+        """Metodo para obtener datos de oferta laboral mediante su id"""
+
+        oferta = self.oferta_laboral_dao.perfil_oferta_laboral(oferta_id)
+
+        if not oferta:
+            raise HTTPException(404, "Oferta laboral no encontrada")
+
+        return oferta

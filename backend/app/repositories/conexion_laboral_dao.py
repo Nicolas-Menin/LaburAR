@@ -45,7 +45,8 @@ class ConexionLaboralDAO:
             Empleador.nombre_negocio.label("nombre_empleador"),
             OfertaLaboral.titulo.label("nombre_oferta"),
             ConexionLaboral.estado.label("estado"),
-            ConexionLaboral.fecha_conexion.label("fecha_conexion")
+            ConexionLaboral.fecha_conexion.label("fecha_conexion"),
+            Empleador.foto_perfil.label("foto_perfil_empleador")
             )
             .join(
                 Empleador,
@@ -69,6 +70,7 @@ class ConexionLaboralDAO:
         self,
         id_empleador: int,
         busqueda: str | None = None,
+        oferta_id: int | None = None,
         offset: int = 0,
         limit: int = 10
         ):
@@ -83,7 +85,8 @@ class ConexionLaboralDAO:
                 Postulante.apellido.label("apellido_postulante"),
                 OfertaLaboral.titulo.label("nombre_oferta"),
                 ConexionLaboral.estado.label("estado"),
-                ConexionLaboral.fecha_conexion.label("fecha_conexion")
+                ConexionLaboral.fecha_conexion.label("fecha_conexion"),
+                Postulante.foto_perfil.label("foto_perfil_postulante")
             )
             .join(
                 Postulante,
@@ -102,6 +105,11 @@ class ConexionLaboralDAO:
                     Postulante.nombre.ilike(f"%{busqueda}%"),
                     Postulante.apellido.ilike(f"%{busqueda}%")
                 )
+            )
+        print(oferta_id)
+        if oferta_id is not None:
+            query = query.filter(
+                ConexionLaboral.oferta_id == oferta_id
             )
 
         return query.offset(offset).limit(limit).all()

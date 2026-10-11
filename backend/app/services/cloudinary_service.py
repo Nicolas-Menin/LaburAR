@@ -28,9 +28,11 @@ class CloudinaryService:
         archivo_cv = cloudinary.uploader.upload(
             archivo,
             folder="laburar/archivos_cv_postulante/",
-            public_id = f"cv_postulante_{id_postulante}"
+            public_id = f"cv_postulante_{id_postulante}",
+            resource_type="raw",
+            type="upload",
+            overwrite=True,
         )
-
 
         url = archivo_cv["secure_url"]
 

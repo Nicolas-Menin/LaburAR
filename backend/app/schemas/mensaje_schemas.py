@@ -37,3 +37,7 @@ class MensajeList(BaseModel):
     mensajes: List[MensajeChat] | None = None
 
 
+class MensajeStateUpdate(BaseModel):
+    """Contrato para actualizazr el estado del mensaje"""
+
+    conversacion_id: int
