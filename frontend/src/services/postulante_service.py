@@ -1,30 +1,48 @@
-from typing import Literal
+from typing import Literal, List
 from datetime import date
+import flet as ft
+
 from frontend.src.services.api_service import ApiService
+
 
 class PostulanteService:
     """Service de Postulante"""
 
     @staticmethod
-    async def perfil():
+    async def perfil(page: ft.Page):
         """Metodo para obtener perfil de postulante"""
 
+        return await ApiService.get(
+            page,
+            endpoint="/postulante/perfil"
+        )
 
-        return await ApiService.get(endpoint="/postulante/perfil")
+    @staticmethod
+    async def obtener_postulante(
+        page: ft.Page,
+        postulante_id: int
+    ):
+        """Metodo para obtener el perfil de un postulante por su id"""
 
+        return await ApiService.get(
+            page,
+            f"/postulante/{postulante_id}"
+        )
 
     @staticmethod
     async def buscar_postulantes(
+        page: ft.Page,
         busqueda: str | None = None,
         ubicacion: str | None = None,
         estudios: str | None = None,
-        experiencias_laborales: str |  None = None,
+        experiencias_laborales: str | None = None,
         disponibilidad: Literal[
             "JORNADA_COMPLETA",
             "MEDIA_JORNADA",
             "FINES_SEMANA",
             "A_CONVENIR"
         ] | None = None,
+        habilidades: List[str] | None = None,
         offset: int = 0
     ):
         """Metodo para buscar postulantes"""
@@ -35,13 +53,19 @@ class PostulanteService:
             "estudios": estudios,
             "experiencias_laborales": experiencias_laborales,
             "disponibilidad": disponibilidad,
+            "habilidades": habilidades,
             "offset": offset
         }
 
-        return await ApiService.get(endpoint="/postulante/buscar-postulantes",params=params)
+        return await ApiService.get(
+            page,
+            endpoint="/postulante/buscar-postulantes",
+            params=params
+        )
 
     @staticmethod
     async def actualizar_postulante(
+        page: ft.Page,
         nombre: str | None = None,
         apellido: str | None = None,
         ubicacion: str | None = None,
@@ -65,13 +89,19 @@ class PostulanteService:
             "disponibilidad": disponibilidad,
             "foto_perfil": foto_perfil,
             "cv": cv
+
         }
 
-        return await ApiService.put(endpoint="/postulante/actualizar-postulnate",datos=datos)
 
+        return await ApiService.put(
+            page,
+            endpoint="/postulante/actualizar-postulante",
+            datos=datos
+        )
 
     @staticmethod
     async def crear_estudio(
+        page: ft.Page,
         titulo: str,
         institucion: str,
         fecha_inicio: date,
@@ -81,29 +111,34 @@ class PostulanteService:
             "FINALIZADO"
         ],
         nivel: Literal[
-          "PRIMARIO",
-          "SECUNDARIO",
-          "UNIVERSITARIO",
-          "TERCIARIO",
-          "CURSO"
+            "PRIMARIO",
+            "SECUNDARIO",
+            "UNIVERSITARIO",
+            "TERCIARIO",
+            "CURSO"
         ],
         fecha_fin: date | None = None,
     ):
         """Metodo para crear estudio de postulante"""
 
-        datos =  {
+        datos = {
             "titulo": titulo,
             "institucion": institucion,
-            "fecha_inicio": str(fecha_inicio),
-            "fecha_fin": str(fecha_fin),
+            "fecha_inicio": fecha_inicio.isoformat() ,
+            "fecha_fin": fecha_fin.isoformat() if fecha_fin else None,
             "estado": estado,
             "nivel": nivel
         }
 
-        return await ApiService.post(endpoint="/postulante/crear-estudio",datos=datos)
+        return await ApiService.post(
+            page,
+            endpoint="/postulante/crear-estudio",
+            datos=datos
+        )
 
     @staticmethod
     async def actualizar_estudio(
+        page: ft.Page,
         estudio_id: int,
         titulo: str | None = None,
         institucion: str | None = None,
@@ -124,32 +159,39 @@ class PostulanteService:
     ):
         """Metodo para actualizar datos de estudio de postulante"""
 
-        datos =  {
-            "estudio_id": estudio_id,
+        datos = {
             "titulo": titulo,
             "institucion": institucion,
-            "fecha_inicio": str(fecha_inicio),
-            "fecha_fin": str(fecha_fin),
+            "fecha_inicio": fecha_inicio.isoformat() if fecha_inicio else None,
+            "fecha_fin": fecha_fin.isoformat() if fecha_fin else None,
             "estado": estado,
             "nivel": nivel
         }
 
-        return await ApiService.put(endpoint="/postulante/actualizar-estudio",datos=datos)
+        return await ApiService.put(
+            page,
+            endpoint=f"/postulante/actualizar-estudio?estudio_id={estudio_id}",
+            datos=datos
+        )
 
     @staticmethod
     async def eliminar_estudio(
+        page: ft.Page,
         estudio_id: int
     ):
         """Metodo para eliminar estudio de postulante"""
 
         params = {"estudio_id": estudio_id}
 
-        return await ApiService.delete("/postulante/eliminar-estudio",params=params)
-
-
+        return await ApiService.delete(
+            page,
+            "/postulante/eliminar-estudio",
+            params=params
+        )
 
     @staticmethod
     async def crear_experiencia_laboral(
+        page: ft.Page,
         empresa: str,
         puesto: str,
         fecha_inicio: date,
@@ -162,16 +204,21 @@ class PostulanteService:
         datos = {
             "empresa": empresa,
             "puesto": puesto,
-            "fecha_inicio": str(fecha_inicio),
-            "fecha_fin": str(fecha_fin),
+            "fecha_inicio": fecha_inicio.isoformat(),
+            "fecha_fin": fecha_fin.isoformat() if fecha_fin else None,
             "descripcion": descripcion,
             "area": area
         }
 
-        return await ApiService.post(endpoint="/postulante/crear-experiencia-laboral",datos=datos)
+        return await ApiService.post(
+            page,
+            endpoint="/postulante/crear-experiencia-laboral",
+            datos=datos
+        )
 
     @staticmethod
     async def actualizar_experiencia_laboral(
+        page: ft.Page,
         experiencia_laboral_id: int,
         empresa: str | None = None,
         puesto: str | None = None,
@@ -183,87 +230,119 @@ class PostulanteService:
         """Metodo para actualizar datos de la experiencia laboral de postulante"""
 
         datos = {
-            "experiencia_laboral_id": experiencia_laboral_id,
             "empresa": empresa,
             "puesto": puesto,
-            "fecha_inicio": str(fecha_inicio),
-            "fecha_fin": str(fecha_fin),
+            "fecha_inicio": fecha_inicio.isoformat() if fecha_inicio else None,
+            "fecha_fin": fecha_fin.isoformat() if fecha_fin else None,
             "descripcion": descripcion,
             "area": area,
         }
 
-        return await ApiService.put(endpoint="/postulante/actualizar-experiencia-laboral",datos=datos)
+        return await ApiService.put(
+            page,
+            endpoint=f"/postulante/actualizar-experiencia-laboral?experiencia_laboral_id={experiencia_laboral_id}",
+            datos=datos
+        )
 
     @staticmethod
     async def eliminar_experiencia_laboral(
+        page: ft.Page,
         experiencia_laboral_id: int
     ):
         """Metodo para eliminar experiencia laboral de postulante"""
 
-        params = {"experiencia_laboral_id": experiencia_laboral_id}
+        params = {
+            "experiencia_laboral_id": experiencia_laboral_id
+        }
 
-
-        return await ApiService.delete(endpoint="/postulante/eliminar-experiencia-laboral",params=params)
+        return await ApiService.delete(
+            page,
+            endpoint="/postulante/eliminar-experiencia-laboral",
+            params=params
+        )
 
     @staticmethod
     async def crear_habilidad(
+        page: ft.Page,
         nombre: str
     ):
         """Metodo para crear habilidad de postulante"""
 
         datos = {"nombre": nombre}
 
-
-        return await ApiService.post(endpoint="/postulante/crear-habilidad",datos=datos)
+        return await ApiService.post(
+            page,
+            endpoint="/postulante/crear-habilidad",
+            datos=datos
+        )
 
     @staticmethod
     async def eliminar_habilidad(
+        page: ft.Page,
         habilidad_id: int
     ):
         """Metodo para eliminar habilidad de postulante"""
 
         params = {"habilidad_id": habilidad_id}
 
-        return await ApiService.delete("/postulante/eliminar-habilidad",params=params)
+        return await ApiService.delete(
+            page,
+            "/postulante/eliminar-habilidad",
+            params=params
+        )
 
     @staticmethod
     async def filtrar_postulaciones(
+        page: ft.Page,
         busqueda: str | None = None,
         offset: int = 0
     ):
         """Metodo para filtrar las postulaciones de postulante"""
 
         params = {
-            "busqueda":  busqueda,
+            "busqueda": busqueda,
             "offset": offset
         }
 
-        return await ApiService.get(endpoint="/postulante/mis-postulaciones",params=params)
+        return await ApiService.get(
+            page,
+            endpoint="/postulante/mis-postulaciones",
+            params=params
+        )
 
     @staticmethod
     async def crear_postulacion(
+        page: ft.Page,
         oferta_id: int
     ):
         """Metodo para crear/postularse a una oferta laboral"""
 
         datos = {"oferta_id": oferta_id}
 
-
-        return await ApiService.post("/postulante/crear-postulacion",datos=datos)
+        return await ApiService.post(
+            page,
+            "/postulante/crear-postulacion",
+            datos=datos
+        )
 
     @staticmethod
     async def verificar_postulacion(
+        page: ft.Page,
         oferta_id: int
     ):
         """Metodo para verificar si un postulante esta postulado a una oferta laboral"""
 
         params = {"oferta_id": oferta_id}
 
-        return await ApiService.get("/postulante/verificar-postulacion",params=params)
-
+        return await ApiService.get(
+            page,
+            "/postulante/verificar-postulacion",
+            params=params
+        )
 
     @staticmethod
     async def actualizar_conexion_laboral(
+        page: ft.Page,
         conexion_laboral_id: int,
         estado: Literal[
             "ACEPTADA",
@@ -277,20 +356,30 @@ class PostulanteService:
             "estado": estado
         }
 
-        return await ApiService.put("/postulante/actualizar-conexion-laboral",datos=datos)
+        return await ApiService.put(
+            page,
+            "/postulante/actualizar-solicitud-laboral",
+            datos=datos
+        )
 
     @staticmethod
     async def verificar_conexion_laboral(
+        page: ft.Page,
         oferta_id: int
     ):
         """Metodo para verificar si existe una conexion laboral con una oferta laboral"""
 
         params = {"oferta_id": oferta_id}
 
-        return await ApiService.get(endpoint="/postulante/verificar-conexion-laboral",params=params)
+        return await ApiService.get(
+            page,
+            endpoint="/postulante/verificar-conexion-laboral",
+            params=params
+        )
 
     @staticmethod
     async def buscar_conexiones_laborales(
+        page: ft.Page,
         busqueda: str | None = None,
         offset: int = 0
     ):
@@ -301,4 +390,8 @@ class PostulanteService:
             "offset": offset
         }
 
-        return await ApiService.get("/postulante/buscar-solicitudes-laborales",params=params)
+        return await ApiService.get(
+            page,
+            "/postulante/buscar-solicitudes-laborales",
+            params=params
+        )

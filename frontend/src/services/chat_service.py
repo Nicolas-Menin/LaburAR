@@ -1,4 +1,6 @@
 import json
+
+import flet as ft
 import websockets
 
 from frontend.src.session.sesion import Sesion
@@ -10,11 +12,20 @@ class ChatService:
 
     @staticmethod
     async def conectar(
+        page: ft.Page,
         conversacion_id: int
     ):
         """Metodo para conectar conexion websocket"""
 
-        url = f"ws://{API_URL}/mensajes/{conversacion_id}?token={Sesion.token}"
+        esquema_ws = "wss" if API_URL.startswith("https://") else "ws"
+        host = API_URL.replace("https://", "").replace("http://", "")
+
+        token = Sesion.token(page)
+
+        url = (
+            f"{esquema_ws}://{host}/mensajes/"
+            f"{conversacion_id}?token={token}"
+        )
 
         return await websockets.connect(url)
 
@@ -24,7 +35,6 @@ class ChatService:
         contenido: str
     ):
         """Metodo para enviar mensajes mediante websocket"""
-
 
         await conexion.send(
             json.dumps({

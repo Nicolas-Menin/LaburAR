@@ -1,18 +1,28 @@
-from frontend.src.services.api_service import ApiService
+import flet as ft
 
+from frontend.src.services.api_service import ApiService
 
 
 class ConversacionService:
     """Service de Conversacion"""
 
     @staticmethod
-    async def traer_conversaciones_postulante():
+    async def traer_conversaciones_postulante(page: ft.Page):
         """Metodo para traer las conversaciones de postulante"""
 
-        return await ApiService.get(endpoint="/conversacion/traer-conversacion-postulante")
+        return await ApiService.get(
+            page=page,
+            endpoint="/conversacion/traer-conversaciones-postulante"
+        )
 
     @staticmethod
-    async def traer_conversaciones_empleador():
+    async def traer_conversaciones_empleador(page: ft.Page,oferta_id:int | None = None):
         """Metodo para traer las conversaciones de empleador"""
 
-        return await ApiService.get(endpoint="/conversacion/traer-conversaciones-empleador")
+        params = {"oferta_id": oferta_id}
+
+        return await ApiService.get(
+            page=page,
+            endpoint="/conversacion/traer-conversaciones-empleador",
+            params=params
+        )

@@ -1,81 +1,176 @@
 import httpx
+import flet as ft
+
 from frontend.src.core.config import API_URL
 from frontend.src.session.sesion import Sesion
+from frontend.src.excepciones.api_excepciones import (
+    ErrorAutenticacion,
+    ErrorValidacion,
+    ErrorNoEncontrado,
+    ErrorServidor,
+    ApiException,
+)
+
 
 class ApiService:
     """Service de API"""
 
     @staticmethod
-    async def post(endpoint: str,datos: dict):
+    async def post(
+        page: ft.Page,
+        endpoint: str,
+        datos: dict
+    ):
         """Metodo para realizar solicitudes POST"""
 
-        headers =ApiService._obtener_headers()
+        headers = await ApiService._obtener_headers(page)
 
-        async with httpx.AsyncClient() as cliente:
+        try:
 
-            response = await cliente.post(f"{API_URL}{endpoint}",json=datos,headers=headers)
+            async with httpx.AsyncClient(timeout=30) as cliente:
 
-        response.raise_for_status()
+                response = await cliente.post(
+                    f"{API_URL}{endpoint}",
+                    json=datos,
+                    headers=headers
+                )
 
+            response.raise_for_status()
 
+            return response.json()
 
-        return response.json()
+        except httpx.HTTPStatusError as error:
 
+            await ApiService._manejar_error(error)
 
     @staticmethod
-    async def put(endpoint:str, datos:dict):
+    async def put(
+        page: ft.Page,
+        endpoint: str,
+        datos: dict | None = None
+    ):
         """Metodo para realizar solicitudes PUT"""
 
-        headers =ApiService._obtener_headers()
+        headers = await ApiService._obtener_headers(page)
 
-        async with httpx.AsyncClient() as cliente:
+        try:
 
-            response = await cliente.put(f"{API_URL}{endpoint}",json=datos,headers=headers)
+            async with httpx.AsyncClient(timeout=30) as cliente:
 
+                response = await cliente.put(
+                    f"{API_URL}{endpoint}",
+                    json=datos,
+                    headers=headers
+                )
 
-        response.raise_for_status()
+            response.raise_for_status()
 
+            return response.json()
 
-        return response.json()
+        except httpx.HTTPStatusError as error:
+
+            await ApiService._manejar_error(error)
 
     @staticmethod
-    async def get(endpoint:str, params: dict | None = None):
+    async def get(
+        page: ft.Page,
+        endpoint: str,
+        params: dict | None = None
+    ):
         """Metodo para realizar solicitudes GET"""
 
-        headers =ApiService._obtener_headers()
+        params = {
+            k: v
+            for k, v in (params or {}).items()
+            if v not in (None, "", [])
+        }
 
-        async with httpx.AsyncClient() as cliente:
+        headers = await ApiService._obtener_headers(page)
 
-            response = await cliente.get(f"{API_URL}{endpoint}",params=params,headers=headers)
+        try:
 
+            async with httpx.AsyncClient(timeout=30) as cliente:
 
-        response.raise_for_status()
+                response = await cliente.get(
+                    f"{API_URL}{endpoint}",
+                    params=params,
+                    headers=headers
+                )
 
-        return response.json()
+            response.raise_for_status()
+
+            return response.json()
+
+        except httpx.HTTPStatusError as error:
+
+            await ApiService._manejar_error(error)
 
     @staticmethod
-    async def delete(endpoint: str, params: dict | None = None):
+    async def delete(
+        page: ft.Page,
+        endpoint: str,
+        params: dict | None = None
+    ):
         """Metodo para realizar solicitudes DELETE"""
 
-        headers =ApiService._obtener_headers()
+        headers = await ApiService._obtener_headers(page)
 
-        async with httpx.AsyncClient() as cliente:
+        try:
 
-            response = await cliente.delete(f"{API_URL}{endpoint}",params=params,headers=headers)
+            async with httpx.AsyncClient(timeout=30) as cliente:
 
+                response = await cliente.delete(
+                    f"{API_URL}{endpoint}",
+                    params=params,
+                    headers=headers
+                )
 
-        response.raise_for_status()
+            response.raise_for_status()
 
+            return response.json()
 
-        return response.json()
+        except httpx.HTTPStatusError as error:
+
+            await ApiService._manejar_error(error)
 
     @staticmethod
-    async def _obtener_headers():
+    async def _obtener_headers(page: ft.Page):
         """Metodo para obtener los headers de autenticacion"""
 
-        if Sesion.token:
+        token = Sesion.token(page)
 
-            return {"Authorization": f"Bearer {Sesion.token}"}
+        if token:
 
+            if Sesion.token_vencido(page):
+                Sesion.cerrar(page)
+                raise ErrorAutenticacion("La sesion expiro")
+
+            return {
+                "Authorization": f"Bearer {token}"
+            }
 
         return {}
+
+    @staticmethod
+    async def _manejar_error(error):
+        status_code = error.response.status_code
+
+        try:
+            detalle = error.response.json().get("detail")
+        except ValueError:
+            detalle = error.response.text
+
+        if status_code in (401,403):
+            raise ErrorAutenticacion(detalle)
+
+        elif status_code == 422:
+            raise ErrorValidacion(detalle)
+
+        elif status_code == 404:
+            raise ErrorNoEncontrado(detalle)
+
+        elif status_code >= 500:
+            raise ErrorServidor(detalle)
+
+        else:
+            raise ApiException(detalle)
