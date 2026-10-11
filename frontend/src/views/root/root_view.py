@@ -130,7 +130,9 @@ class RootView:
     async def route_change(self, view):
         """Metodo para cambiar de View"""
 
+        print(f"RUTA RECIBIDA: {view.route}")
         route = view.route.split("?")[0]
+        print(f"RUTA PROCESADA: {route}")
 
         if route == "/":
             await self.page.push_route("/login")
@@ -143,7 +145,7 @@ class RootView:
             self.mensajeria.detener_verificacion_conversaciones()
 
         self.page.views.clear()
-
+        print(f"RUTA PUBLICA: {route in self.RUTAS_PUBLICAS}")
         if route not in self.RUTAS_PUBLICAS:
             token = Sesion.token(self.page)
 
@@ -203,6 +205,9 @@ class RootView:
 
     def handle_size(self, _):
         """Maneja el tamaño de la imagen de fondo"""
+
+        if not self.page.views:
+            return
 
         current_view = self.page.views[-1]
 
