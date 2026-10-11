@@ -20,7 +20,7 @@ class RestablecerContrasenaView(ft.View):
     def __init__(self, token: str = None):
         super().__init__()
 
-        self.route = "/restablecer-contraseña"
+        self.route = "/restablecer-contrasena"
         self.padding = 0
         self.spacing = 0
         self.token = token

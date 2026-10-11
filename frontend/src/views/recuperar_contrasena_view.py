@@ -14,7 +14,7 @@ class RecuperarContrasenaView(ft.View):
     def __init__(self):
         super().__init__()
 
-        self.route = "/recuperar-contraseña"
+        self.route = "/recuperar-contrasena"
         self.padding = 0
         self.spacing = 0
 

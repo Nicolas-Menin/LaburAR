@@ -123,16 +123,14 @@ class RootView:
             "/registrar-empleador",
             "/registrar-postulante",
             "/seleccionar-usuario",
-            "/recuperar-contraseña",
-            "/restablecer-contraseña"
+            "/recuperar-contrasena",
+            "/restablecer-contrasena"
         }
 
     async def route_change(self, view):
         """Metodo para cambiar de View"""
 
-        print(f"RUTA RECIBIDA: {view.route}")
         route = view.route.split("?")[0]
-        print(f"RUTA PROCESADA: {route}")
 
         if route == "/":
             await self.page.push_route("/login")
@@ -165,7 +163,7 @@ class RootView:
             "/perfil-empleador": self.perfil_empleador,
             "/perfil-oferta": self.perfil_oferta,
             "/mensajes": self.mensajeria,
-            "/recuperar-contraseña": self.recuperar_contrasena,
+            "/recuperar-contrasena": self.recuperar_contrasena,
             "/perfil-personal-postulante": self.perfil_personal_postulante,
             "/perfil-personal-empleador": self.perfil_personal_empleador,
             "/editar-perfil-postulante": self.editar_perfil_postulante,
@@ -190,7 +188,7 @@ class RootView:
                     usuario_reportado_id=int(usuario_reportado_id)
                 )
             )
-        elif route == "/restablecer-contraseña":
+        elif route == "/restablecer-contrasena":
             token = self.obtener_token_recuperacion(view)
 
             self.page.views.append(
