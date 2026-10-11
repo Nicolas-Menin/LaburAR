@@ -132,6 +132,10 @@ class RootView:
 
         route = view.route.split("?")[0]
 
+        if route == "/":
+            await self.page.push_route("/login")
+            return
+
         if route != "/busqueda":
             self.busqueda.detener_verificacion_mensajes()
 
