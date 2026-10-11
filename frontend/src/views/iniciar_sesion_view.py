@@ -690,7 +690,7 @@ class IniciarSesionView(ft.View):
 
     async def ir_recuperar_contrasena(self, e):
         await self._navegar(
-            "/recuperar-contraseña",
+            "/recuperar-contrasena",
             self.boton_recuperar,
             "¿Olvidaste tu contraseña?",
             ft.Colors.BLUE_600,
