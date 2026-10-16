@@ -205,6 +205,8 @@ class ApiService:
             raise ErrorNoEncontrado(detalle)
         elif status_code >= 500:
             raise ErrorServidor(detalle)
+        elif status_code == 429:
+            raise ErrorServidor(detalle)
         else:
             raise ApiException(detalle)
 
