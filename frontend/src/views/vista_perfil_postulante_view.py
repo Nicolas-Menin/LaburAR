@@ -23,7 +23,6 @@ class PerfilPostulanteView(ft.View):
     ALTO_EXPERIENCIA_VACIA = 110
 
     def __init__(self):
-        """Metodo constructor de la vista de perfil de postulante"""
         super().__init__()
         self.route = "/perfil-postulante"
         self.padding = 0

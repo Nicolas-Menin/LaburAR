@@ -1,6 +1,6 @@
 from typing import Literal
 from fastapi import HTTPException
-from backend.app.repositories.administtrador_dao import AdministradorDAO
+from backend.app.repositories.administrador_dao import AdministradorDAO
 from backend.app.repositories.usuario_dao import UsuarioDAO
 from backend.app.repositories.reporte_dao import ReporteDAO
 

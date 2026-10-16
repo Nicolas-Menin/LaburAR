@@ -27,7 +27,7 @@ class ApiService:
 
         try:
 
-            async with httpx.AsyncClient(timeout=30) as cliente:
+            async with httpx.AsyncClient(timeout=31) as cliente:
 
                 response = await cliente.post(
                     f"{API_URL}{endpoint}",
@@ -43,6 +43,17 @@ class ApiService:
 
             await ApiService._manejar_error(error)
 
+
+        except httpx.TimeoutException as error:
+            ApiService._manejar_timeout(error)
+
+        except httpx.RequestError as error:
+            raise ErrorServidor(
+                "No se pudo establecer comunicación con el servidor."
+                    ) from error
+
+
+
     @staticmethod
     async def put(
         page: ft.Page,
@@ -55,13 +66,13 @@ class ApiService:
 
         try:
 
-            async with httpx.AsyncClient(timeout=30) as cliente:
+            async with httpx.AsyncClient(timeout=31) as cliente:
 
                 response = await cliente.put(
                     f"{API_URL}{endpoint}",
                     json=datos,
                     headers=headers
-                )
+                    )
 
             response.raise_for_status()
 
@@ -70,6 +81,14 @@ class ApiService:
         except httpx.HTTPStatusError as error:
 
             await ApiService._manejar_error(error)
+
+        except httpx.TimeoutException as error:
+            ApiService._manejar_timeout(error)
+
+        except httpx.RequestError as error:
+            raise ErrorServidor(
+                "No se pudo establecer comunicación con el servidor."
+                    ) from error
 
     @staticmethod
     async def get(
@@ -89,7 +108,7 @@ class ApiService:
 
         try:
 
-            async with httpx.AsyncClient(timeout=30) as cliente:
+            async with httpx.AsyncClient(timeout=31) as cliente:
 
                 response = await cliente.get(
                     f"{API_URL}{endpoint}",
@@ -102,8 +121,17 @@ class ApiService:
             return response.json()
 
         except httpx.HTTPStatusError as error:
-
             await ApiService._manejar_error(error)
+
+        except httpx.TimeoutException as error:
+            ApiService._manejar_timeout(error)
+
+        except httpx.RequestError as error:
+            raise ErrorServidor(
+                "No se pudo establecer comunicación con el servidor."
+                    ) from error
+
+
 
     @staticmethod
     async def delete(
@@ -117,7 +145,7 @@ class ApiService:
 
         try:
 
-            async with httpx.AsyncClient(timeout=30) as cliente:
+            async with httpx.AsyncClient(timeout=31) as cliente:
 
                 response = await cliente.delete(
                     f"{API_URL}{endpoint}",
@@ -132,6 +160,15 @@ class ApiService:
         except httpx.HTTPStatusError as error:
 
             await ApiService._manejar_error(error)
+
+        except httpx.TimeoutException as error:
+            ApiService._manejar_timeout(error)
+
+        except httpx.RequestError as error:
+            raise ErrorServidor(
+                "No se pudo establecer comunicación con el servidor."
+                    ) from error
+
 
     @staticmethod
     async def _obtener_headers(page: ft.Page):
@@ -160,17 +197,20 @@ class ApiService:
         except ValueError:
             detalle = error.response.text
 
-        if status_code in (401,403):
+        if status_code in (401, 403):
             raise ErrorAutenticacion(detalle)
-
         elif status_code == 422:
             raise ErrorValidacion(detalle)
-
         elif status_code == 404:
             raise ErrorNoEncontrado(detalle)
-
         elif status_code >= 500:
             raise ErrorServidor(detalle)
-
         else:
             raise ApiException(detalle)
+
+    @staticmethod
+    def _manejar_timeout(error):
+        raise ErrorServidor(
+            "El servidor tardó demasiado en responder. "
+            "Intentá nuevamente."
+        ) from error
