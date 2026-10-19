@@ -1509,25 +1509,13 @@ class EditarPerfilEmpleadorView(ft.View):
 
             self.page.update()
 
-        async def agregar(e):
+        def obtener_datos_formulario():
+            """Valida el formulario y devuelve los datos de la oferta."""
 
-            if self.cargando_oferta:
-                return
-
-            titulo = (
-                txt_titulo.value or ""
-            ).strip()
-
-            descripcion = (
-                txt_descripcion.value or ""
-            ).strip()
-
+            titulo = (txt_titulo.value or "").strip()
+            descripcion = (txt_descripcion.value or "").strip()
             ubicacion = dd_ubicacion.value
-
-            direccion = (
-                txt_direccion.value or ""
-            ).strip()
-
+            direccion = (txt_direccion.value or "").strip()
             rubro = dd_rubro.value
             estado = dd_estado.value
             salario_tipo = dd_salario_tipo.value
@@ -1535,116 +1523,109 @@ class EditarPerfilEmpleadorView(ft.View):
             turno = dd_turno.value
 
             if len(titulo) < 2:
-                mostrar_error(
-                    "Ingresá el título de la oferta"
-                )
-                return
+                mostrar_error("Ingresá el título de la oferta")
+                return None
 
             if len(descripcion) < 2:
-                mostrar_error(
-                    "Ingresá la descripción de la oferta"
-                )
-                return
+                mostrar_error("Ingresá la descripción de la oferta")
+                return None
 
             if not ubicacion:
-                mostrar_error(
-                    "Seleccioná la ubicación"
-                )
-                return
+                mostrar_error("Seleccioná la ubicación")
+                return None
 
             if not direccion:
-                mostrar_error(
-                    "Ingresá la dirección"
-                )
-                return
+                mostrar_error("Ingresá la dirección")
+                return None
 
             if rubro not in self.rubros_disponibles:
-                mostrar_error(
-                    "Seleccioná un rubro de la lista"
-                )
-                return
+                mostrar_error("Seleccioná un rubro de la lista")
+                return None
 
-            if not estado:
-                mostrar_error(
-                    "Seleccioná el estado de la oferta"
-                )
-                return
+            if not editando and not estado:
+                mostrar_error("Seleccioná el estado de la oferta")
+                return None
 
             if not salario_tipo:
-                mostrar_error(
-                    "Seleccioná el tipo de salario"
-                )
-                return
+                mostrar_error("Seleccioná el tipo de salario")
+                return None
 
             if not jornada:
-                mostrar_error(
-                    "Seleccioná la jornada"
-                )
-                return
+                mostrar_error("Seleccioná la jornada")
+                return None
 
             if not turno:
-                mostrar_error(
-                    "Seleccioná el turno"
-                )
-                return
+                mostrar_error("Seleccioná el turno")
+                return None
 
             salario_minimo = None
             salario_maximo = None
 
             if salario_tipo in ("FIJO", "RANGO"):
-
                 try:
                     salario_minimo = Decimal(
                         txt_salario_minimo.value or ""
                     )
-
                 except InvalidOperation:
-                    mostrar_error(
-                        "Ingresá el salario"
-                    )
-                    return
+                    mostrar_error("Ingresá el salario")
+                    return None
 
                 if salario_minimo <= 0:
-                    mostrar_error(
-                        "El salario debe ser mayor a 0"
-                    )
-                    return
+                    mostrar_error("El salario debe ser mayor a 0")
+                    return None
 
             if salario_tipo == "RANGO":
-
                 try:
                     salario_maximo = Decimal(
                         txt_salario_maximo.value or ""
                     )
-
                 except InvalidOperation:
-                    mostrar_error(
-                        "Ingresá el salario máximo"
-                    )
-                    return
+                    mostrar_error("Ingresá el salario máximo")
+                    return None
 
                 if salario_maximo < salario_minimo:
                     mostrar_error(
-                        "El salario máximo no puede ser menor "
-                        "al mínimo"
+                        "El salario máximo no puede ser menor al mínimo"
                     )
-                    return
+                    return None
 
-            dias_laborales = (
-                [
-                    dia
-                    for dia in self.dias_semana
-                    if dia in dias_seleccionados
-                ]
-                or None
-            )
+            dias_laborales = [
+                dia for dia in self.dias_semana
+                if dia in dias_seleccionados
+            ] or None
+
+            return {
+                "titulo": titulo,
+                "descripcion": descripcion,
+                "requisitos": list(requisitos),
+                "ubicacion": ubicacion,
+                "direccion": direccion,
+                "rubro": rubro,
+                "estado": estado,
+                "salario_tipo": salario_tipo,
+                "salario_minimo": (
+                    float(salario_minimo)
+                    if salario_minimo is not None
+                    else None
+                ),
+                "salario_maximo": (
+                    float(salario_maximo)
+                    if salario_maximo is not None
+                    else None
+                ),
+                "jornada": jornada,
+                "turno": turno,
+                "dias_laborales": dias_laborales,
+                "hora_inicio": obtener_hora_inicio(),
+                "hora_fin": obtener_hora_fin(),
+            }
+
+        def preparar_guardado():
+            """Deshabilita el botón mientras se guarda la oferta."""
 
             self.cargando_oferta = True
-
             txt_error.visible = False
-
             btn_agregar.disabled = True
-
             btn_agregar.content = ft.Row(
                 tight=True,
                 spacing=8,
@@ -1656,139 +1637,163 @@ class EditarPerfilEmpleadorView(ft.View):
                         stroke_width=2,
                         color=ft.Colors.WHITE,
                     ),
-                    ft.Text(
-                        "Guardando...",
-                        color=ft.Colors.WHITE,
-                    ),
-                ]
+                    ft.Text("Guardando...", color=ft.Colors.WHITE),
+                ],
             )
-
             self.page.update()
 
+        def restaurar_boton():
+            """Restaura el botón si el guardado falla."""
+
+            btn_agregar.disabled = False
+            btn_agregar.content = ft.Text(
+                texto_boton,
+                color=ft.Colors.WHITE,
+            )
+            self.page.update()
+
+        async def crear_oferta(e):
+            """Crea una oferta nueva; no modifica ofertas existentes."""
+
+            if self.cargando_oferta:
+                return
+
+            datos_oferta = obtener_datos_formulario()
+            if datos_oferta is None:
+                return
+
+            preparar_guardado()
+
             try:
-                if editando:
-                    actualizada = (
-                        await EmpleadorService
-                        .actualizar_oferta_laboral(
-                            self.page,
-                            oferta_laboral_id=oferta["id"],
-                            titulo=titulo,
-                            descripcion=descripcion,
-                            requisitos=list(requisitos),
-                            ubicacion=ubicacion,
-                            direccion=direccion,
-                            rubro=rubro,
-                            salario_tipo=salario_tipo,
-                            salario_minimo=(
-                                float(salario_minimo)
-                                if salario_minimo is not None
-                                else None
-                            ),
-                            salario_maximo=(
-                                float(salario_maximo)
-                                if salario_maximo is not None
-                                else None
-                            ),
-                            jornada=jornada,
-                            turno=turno,
-                            dias_laborales=dias_laborales,
-                            hora_inicio=obtener_hora_inicio(),
-                            hora_fin=obtener_hora_fin(),
-                        )
-                    )
+                creada = await EmpleadorService.crear_oferta_laboral(
+                    self.page,
+                    titulo=datos_oferta["titulo"],
+                    descripcion=datos_oferta["descripcion"],
+                    requisitos=datos_oferta["requisitos"],
+                    ubicacion=datos_oferta["ubicacion"],
+                    direccion=datos_oferta["direccion"],
+                    rubro=datos_oferta["rubro"],
+                    estado=datos_oferta["estado"],
+                    salario_tipo=datos_oferta["salario_tipo"],
+                    salario_minimo=datos_oferta["salario_minimo"],
+                    salario_maximo=datos_oferta["salario_maximo"],
+                    jornada=datos_oferta["jornada"],
+                    turno=datos_oferta["turno"],
+                    dias_laborales=datos_oferta["dias_laborales"],
+                    hora_inicio=datos_oferta["hora_inicio"],
+                    hora_fin=datos_oferta["hora_fin"],
+                )
 
-                    oferta.update(
-                        {
-                            "titulo": titulo,
-                            "descripcion": descripcion,
-                            "requisitos": list(requisitos),
-                            "ubicacion": ubicacion,
-                            "direccion": direccion,
-                            "rubro": rubro,
-                            "salario_tipo": salario_tipo,
-                            "jornada": jornada,
-                            "turno": turno,
-                        }
-                    )
-
-                    if isinstance(
-                        actualizada,
-                        dict
-                    ):
-                        oferta.update(
-                            actualizada
-                        )
-
-                else:
-                    creada = (
-                        await EmpleadorService
-                        .crear_oferta_laboral(
-                            self.page,
-                            titulo=titulo,
-                            descripcion=descripcion,
-                            requisitos=list(requisitos),
-                            ubicacion=ubicacion,
-                            direccion=direccion,
-                            rubro=rubro,
-                            estado=estado,
-                            salario_tipo=salario_tipo,
-                            salario_minimo=salario_minimo,
-                            salario_maximo=salario_maximo,
-                            jornada=jornada,
-                            turno=turno,
-                            dias_laborales=dias_laborales,
-                            hora_inicio=obtener_hora_inicio(),
-                            hora_fin=obtener_hora_fin(),
-                        )
-                    )
-
-                    self.ofertas.append(
-                        creada
-                    )
-
+                self.ofertas.append(creada)
                 self.renderizar_ofertas()
-
                 self.page.pop_dialog()
-
                 self.page.update()
 
             except ErrorAutenticacion:
                 self.page.pop_dialog()
-
                 self.mostrar_dialogo_sesion_expirada()
-
                 await asyncio.sleep(5)
+                await self.page.push_route("/login")
 
-                await self.page.push_route(
-                    "/login"
-                )
-
-            except (
-                ErrorServidor,
-                ErrorValidacion
-            ):
+            except (ErrorServidor, ErrorValidacion):
                 txt_error.value = (
-                    "No se pudo guardar la oferta. "
-                    "Intentá nuevamente"
+                    "No se pudo crear la oferta. Intentá nuevamente"
                 )
-
                 txt_error.visible = True
+                restaurar_boton()
 
-                btn_agregar.disabled = False
+            finally:
+                self.cargando_oferta = False
 
-                btn_agregar.content = ft.Text(
-                    texto_boton,
-                    color=ft.Colors.WHITE,
+        async def actualizar_oferta(e):
+            """Actualiza una oferta existente; no crea ofertas nuevas."""
+
+            if self.cargando_oferta:
+                return
+
+            datos_oferta = obtener_datos_formulario()
+            if datos_oferta is None:
+                return
+
+            preparar_guardado()
+
+            try:
+                hora_inicio = datos_oferta["hora_inicio"]
+                hora_fin = datos_oferta["hora_fin"]
+
+                actualizada = (
+                    await EmpleadorService.actualizar_oferta_laboral(
+                        self.page,
+                        oferta_laboral_id=oferta["id"],
+                        titulo=datos_oferta["titulo"],
+                        descripcion=datos_oferta["descripcion"],
+                        requisitos=datos_oferta["requisitos"],
+                        ubicacion=datos_oferta["ubicacion"],
+                        direccion=datos_oferta["direccion"],
+                        rubro=datos_oferta["rubro"],
+                        estado=oferta.get("estado"),
+                        salario_tipo=datos_oferta["salario_tipo"],
+                        salario_minimo=datos_oferta["salario_minimo"],
+                        salario_maximo=datos_oferta["salario_maximo"],
+                        jornada=datos_oferta["jornada"],
+                        turno=datos_oferta["turno"],
+                        dias_laborales=datos_oferta["dias_laborales"],
+                        hora_inicio=hora_inicio,
+                        hora_fin=hora_fin,
+                    )
                 )
 
+                oferta.update({
+                    "titulo": datos_oferta["titulo"],
+                    "descripcion": datos_oferta["descripcion"],
+                    "requisitos": datos_oferta["requisitos"],
+                    "ubicacion": datos_oferta["ubicacion"],
+                    "direccion": datos_oferta["direccion"],
+                    "rubro": datos_oferta["rubro"],
+                    "salario_tipo": datos_oferta["salario_tipo"],
+                    "salario_minimo": datos_oferta["salario_minimo"],
+                    "salario_maximo": datos_oferta["salario_maximo"],
+                    "jornada": datos_oferta["jornada"],
+                    "turno": datos_oferta["turno"],
+                    "dias_laborales": datos_oferta["dias_laborales"],
+                    "hora_inicio": (
+                        hora_inicio.isoformat()
+                        if hora_inicio is not None
+                        else None
+                    ),
+                    "hora_fin": (
+                        hora_fin.isoformat()
+                        if hora_fin is not None
+                        else None
+                    ),
+                })
+
+                if isinstance(actualizada, dict):
+                    oferta.update(actualizada)
+
+                self.renderizar_ofertas()
+                self.page.pop_dialog()
                 self.page.update()
+
+            except ErrorAutenticacion:
+                self.page.pop_dialog()
+                self.mostrar_dialogo_sesion_expirada()
+                await asyncio.sleep(5)
+                await self.page.push_route("/login")
+
+            except (ErrorServidor, ErrorValidacion):
+                txt_error.value = (
+                    "No se pudo actualizar la oferta. Intentá nuevamente"
+                )
+                txt_error.visible = True
+                restaurar_boton()
 
             finally:
                 self.cargando_oferta = False
 
         btn_agregar = ft.Button(
             texto_boton,
-            on_click=agregar,
+            on_click=actualizar_oferta if editando else crear_oferta,
             style=ft.ButtonStyle(
                 color=ft.Colors.WHITE,
                 bgcolor=ft.Colors.BLUE_500,
