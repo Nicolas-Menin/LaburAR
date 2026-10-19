@@ -306,7 +306,7 @@ class PerfilOfertaLaboralView(ft.View):
                 spacing=10,
                 controls=[
                     ft.Text(
-                        "HABILIDADES REQUERIDAS",
+                        "REQUISITOS",
                         weight=ft.FontWeight.BOLD,
                         color=ft.Colors.BLACK_54,
                         font_family="Inter-Bold",
@@ -1055,9 +1055,7 @@ class PerfilOfertaLaboralView(ft.View):
             self.btn_aceptar_solicitud.visible = False
             self.btn_conversacion.visible = True
             self.update()
-            self.mostrar_mensaje(
-                "Solicitud de contacto aceptada correctamente"
-            )
+            self.mostrar_dialogo_conexion_aceptada()
         except ErrorAutenticacion:
             self.page.pop_dialog()
             self.mostrar_dialogo_sesion_expirada()
@@ -1073,6 +1071,60 @@ class PerfilOfertaLaboralView(ft.View):
             )
         finally:
             self.cargando_aceptacion = False
+
+    def mostrar_dialogo_conexion_aceptada(self):
+        """Informa que se creó la conexión laboral y cómo continuar."""
+        empresa = self.conexion.get(
+            "nombre_empleador",
+            "la empresa",
+        )
+        puesto = self.conexion.get(
+            "nombre_oferta",
+            self.txt_titulo.value or "la oferta publicada",
+        )
+        self.page.show_dialog(
+            ft.AlertDialog(
+                modal=True,
+                bgcolor=ft.Colors.WHITE,
+                title=ft.Row(
+                    controls=[
+                        ft.Icon(
+                            ft.Icons.CHECK_CIRCLE_OUTLINE,
+                            color=ft.Colors.GREEN_600,
+                            size=28,
+                        ),
+                        ft.Text(
+                            "¡Conexión laboral creada!",
+                            color=ft.Colors.BLUE_GREY_900,
+                        ),
+                    ],
+                    spacing=10,
+                ),
+                content=ft.Text(
+                    f"Ahora tenés una conexión laboral con {empresa} "
+                    f"para el puesto de {puesto}.\n\n"
+                    "Entrá a tus conversaciones para hablar con la "
+                    "empresa sobre la oferta, las tareas y la modalidad "
+                    "de trabajo.",
+                    color=ft.Colors.BLACK_87,
+                ),
+                actions=[
+                    ft.TextButton(
+                        "IR A CONVERSACIONES",
+                        style=ft.ButtonStyle(
+                            color=ft.Colors.BLUE_600,
+                        ),
+                        on_click=self.ir_a_conversaciones_desde_dialogo,
+                    ),
+                ],
+                actions_alignment=ft.MainAxisAlignment.END,
+            )
+        )
+
+    async def ir_a_conversaciones_desde_dialogo(self, e):
+        """Cierra la confirmación y abre las conversaciones."""
+        self.page.pop_dialog()
+        await self.page.push_route("/mensajes")
 
     async def abrir_conversacion(self, e):
         """Metodo para abrir la conversacion laboral."""

@@ -407,6 +407,9 @@ class EditarPerfilPostulanteView(ft.View):
             bar_bgcolor=ft.Colors.WHITE,
             bar_hint_text="Buscar habilidad...",
             view_hint_text="Escribí para buscar...",
+            view_header_text_style=ft.TextStyle(
+                color=ft.Colors.BLACK
+            ),
             bar_elevation=0,
             view_elevation=4,
             divider_color=ft.Colors.BLUE_GREY_100,

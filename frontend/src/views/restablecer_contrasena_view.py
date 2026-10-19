@@ -1,5 +1,3 @@
-import asyncio
-
 import flet as ft
 
 from frontend.src.services.autenticacion_service import AutenticacionService
@@ -24,7 +22,6 @@ class RestablecerContrasenaView(ft.View):
         self.padding = 0
         self.spacing = 0
         self.token = token
-
         self.cargando = False
 
         self.bg_image = ft.Image(
@@ -58,6 +55,7 @@ class RestablecerContrasenaView(ft.View):
             prefix_icon=ft.Icons.LOCK_OUTLINED,
             border_radius=10,
             bgcolor=ft.Colors.WHITE,
+            text_style=ft.TextStyle(color=ft.Colors.BLACK),
             focused_border_color=ft.Colors.BLUE_500,
         )
 
@@ -69,16 +67,22 @@ class RestablecerContrasenaView(ft.View):
             prefix_icon=ft.Icons.LOCK_RESET_OUTLINED,
             border_radius=10,
             bgcolor=ft.Colors.WHITE,
+            text_style=ft.TextStyle(color=ft.Colors.BLACK),
             focused_border_color=ft.Colors.BLUE_500,
         )
 
         self.btn_restablecer = ft.FilledButton(
-            "RESTABLECER CONTRASEÑA",
+            content=ft.Text("RESTABLECER CONTRASEÑA"),
             style=ft.ButtonStyle(
                 color=ft.Colors.WHITE,
                 bgcolor=ft.Colors.BLUE_500,
                 shape=ft.RoundedRectangleBorder(radius=10),
-                padding=ft.Padding(left=20, top=15, right=20, bottom=15),
+                padding=ft.Padding(
+                    left=20,
+                    top=15,
+                    right=20,
+                    bottom=15,
+                ),
             ),
             width=360,
             on_click=self.restablecer_contrasena,
@@ -102,7 +106,10 @@ class RestablecerContrasenaView(ft.View):
             width=420,
             height=500,
             padding=30,
-            bgcolor=ft.Colors.with_opacity(0.95, ft.Colors.WHITE),
+            bgcolor=ft.Colors.with_opacity(
+                0.95,
+                ft.Colors.WHITE,
+            ),
             border_radius=15,
             border=ft.Border.all(
                 1,
@@ -111,7 +118,10 @@ class RestablecerContrasenaView(ft.View):
             shadow=ft.BoxShadow(
                 spread_radius=1,
                 blur_radius=20,
-                color=ft.Colors.with_opacity(0.12, ft.Colors.BLACK),
+                color=ft.Colors.with_opacity(
+                    0.12,
+                    ft.Colors.BLACK,
+                ),
                 offset=ft.Offset(0, 8),
             ),
             content=ft.Column(
@@ -156,7 +166,7 @@ class RestablecerContrasenaView(ft.View):
         ]
 
     def _mostrar_cargando(self, cargando: bool):
-        """Muestra la espera en el botón y bloquea el formulario."""
+        """Muestra la espera y bloquea el formulario."""
 
         self.cargando = cargando
 
@@ -166,7 +176,6 @@ class RestablecerContrasenaView(ft.View):
         self.btn_restablecer.disabled = cargando
 
         if cargando:
-
             self.btn_restablecer.content = ft.Row(
                 tight=True,
                 alignment=ft.MainAxisAlignment.CENTER,
@@ -184,9 +193,7 @@ class RestablecerContrasenaView(ft.View):
                     ),
                 ],
             )
-
         else:
-
             self.btn_restablecer.content = ft.Text(
                 "RESTABLECER CONTRASEÑA",
                 color=ft.Colors.WHITE,
@@ -198,13 +205,13 @@ class RestablecerContrasenaView(ft.View):
             pass
 
     def _vaciar_campos(self):
-        """Limpia los campos para que no queden contraseñas en la vista."""
+        """Limpia las contraseñas ingresadas."""
 
         self.txt_nueva_contrasena.value = ""
         self.txt_confirmar_contrasena.value = ""
 
     async def restablecer_contrasena(self, e):
-        """Método para procesar el cambio de contraseña."""
+        """Procesa el cambio de contraseña."""
 
         if self.cargando:
             return
@@ -213,7 +220,9 @@ class RestablecerContrasenaView(ft.View):
         confirmar_clave = self.txt_confirmar_contrasena.value or ""
 
         if not nueva_clave.strip() or not confirmar_clave.strip():
-            self.mostrar_mensaje("Por favor, completá todos los campos")
+            self.mostrar_mensaje(
+                "Por favor, completá todos los campos"
+            )
             return
 
         if len(nueva_clave) < self.LARGO_MINIMO_CONTRASENA:
@@ -224,7 +233,9 @@ class RestablecerContrasenaView(ft.View):
             return
 
         if nueva_clave != confirmar_clave:
-            self.mostrar_mensaje("Las contraseñas no coinciden")
+            self.mostrar_mensaje(
+                "Las contraseñas no coinciden"
+            )
             return
 
         if not self.token:
@@ -243,28 +254,82 @@ class RestablecerContrasenaView(ft.View):
             )
 
             self._vaciar_campos()
-
-            self.mostrar_mensaje("¡Contraseña restablecida con éxito!")
-            await asyncio.sleep(1.5)
-            await self.page.push_route("/login")
+            self.mostrar_dialogo_contrasena_restablecida()
 
         except ErrorAutenticacion:
-            self.mostrar_mensaje("El enlace de recuperación venció o es inválido")
+            self.mostrar_mensaje(
+                "El enlace de recuperación venció o es inválido"
+            )
 
         except ErrorValidacion:
-            self.mostrar_mensaje("La contraseña ingresada no es válida")
+            self.mostrar_mensaje(
+                "La contraseña ingresada no es válida"
+            )
 
         except ErrorServidor:
-            self.mostrar_mensaje("Error en el servidor. Intente más tarde")
+            self.mostrar_mensaje(
+                "Error en el servidor. Intente más tarde"
+            )
 
         except ErrorNoEncontrado:
-            self.mostrar_mensaje("Ocurrió un error inesperado")
+            self.mostrar_mensaje(
+                "Ocurrió un error inesperado"
+            )
 
         finally:
             self._mostrar_cargando(False)
 
+    def mostrar_dialogo_contrasena_restablecida(self):
+        """Muestra la confirmación del cambio de contraseña."""
+
+        self.page.show_dialog(
+            ft.AlertDialog(
+                modal=True,
+                bgcolor=ft.Colors.WHITE,
+                title=ft.Row(
+                    controls=[
+                        ft.Icon(
+                            ft.Icons.CHECK_CIRCLE_OUTLINE,
+                            color=ft.Colors.GREEN_600,
+                            size=28,
+                        ),
+                        ft.Text(
+                            "¡Contraseña restablecida!",
+                            color=ft.Colors.BLUE_GREY_900,
+                        ),
+                    ],
+                    spacing=10,
+                ),
+                content=ft.Text(
+                    "Tu contraseña se cambió correctamente. "
+                    "Ya podés iniciar sesión con tu nueva contraseña.",
+                    color=ft.Colors.BLACK_87,
+                ),
+                actions=[
+                    ft.TextButton(
+                        "ACEPTAR",
+                        style=ft.ButtonStyle(
+                            bgcolor=ft.Colors.BLUE_500,
+                            color=ft.Colors.WHITE,
+                            shape=ft.RoundedRectangleBorder(
+                                radius=10
+                            ),
+                        ),
+                        on_click=self.ir_a_login_desde_dialogo,
+                    )
+                ],
+                actions_alignment=ft.MainAxisAlignment.END,
+            )
+        )
+
+    async def ir_a_login_desde_dialogo(self, e):
+        """Cierra el diálogo y vuelve al inicio de sesión."""
+
+        self.page.pop_dialog()
+        await self.page.push_route("/login")
+
     async def volver(self, e):
-        """Método para volver a la pantalla de inicio de sesión."""
+        """Vuelve al inicio de sesión."""
 
         if self.cargando:
             return
@@ -272,7 +337,8 @@ class RestablecerContrasenaView(ft.View):
         await self.page.push_route("/login")
 
     def mostrar_mensaje(self, mensaje: str):
-        """Método auxiliar para mostrar notificaciones SnackBar."""
+        """Muestra mensajes de error y validación."""
+
         self.page.show_dialog(
             ft.SnackBar(
                 content=ft.Text(mensaje)

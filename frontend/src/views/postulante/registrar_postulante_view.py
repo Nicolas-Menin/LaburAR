@@ -499,7 +499,7 @@ class RegistrarPostulanteView(ft.View):
 
             self._vaciar_campos()
 
-            await self.page.push_route("/login")
+            self.mostrar_dialogo_registro_exitoso()
 
         except ErrorValidacion:
             self.mostrar_mensaje(
@@ -529,6 +529,53 @@ class RegistrarPostulanteView(ft.View):
                 content=ft.Text(mensaje)
             )
         )
+
+    def mostrar_dialogo_registro_exitoso(self):
+        """Método para mostrar el dialogo de registro exitoso."""
+
+        self.page.show_dialog(
+            ft.AlertDialog(
+                modal=True,
+                bgcolor=ft.Colors.WHITE,
+                title=ft.Row(
+                    spacing=8,
+                    controls=[
+                        ft.Icon(
+                            ft.Icons.CHECK_CIRCLE_OUTLINE,
+                            color=ft.Colors.BLUE_500,
+                        ),
+                        ft.Text(
+                            "¡Registro exitoso!",
+                            weight=ft.FontWeight.BOLD,
+                            color=ft.Colors.BLACK_87,
+                        ),
+                    ],
+                ),
+                content=ft.Text(
+                    "Te has registrado correctamente como postulante.",
+                    color=ft.Colors.BLACK_54,
+                ),
+                actions=[
+                    ft.FilledButton(
+                        "ACEPTAR",
+                        on_click=self.ir_a_login_desde_dialogo,
+                        style=ft.ButtonStyle(
+                            bgcolor=ft.Colors.BLUE_500,
+                            color=ft.Colors.WHITE,
+                            shape=ft.RoundedRectangleBorder(
+                                radius=10
+                            ),
+                        ),
+                    ),
+                ],
+            )
+        )
+
+    async def ir_a_login_desde_dialogo(self, e):
+        """Método para cerrar el dialogo de registro exitoso e ir al login."""
+
+        self.page.pop_dialog()
+        await self.page.push_route("/login")
 
     def _vaciar_campos(self):
         """Método para vaciar los campos y quitar los errores."""

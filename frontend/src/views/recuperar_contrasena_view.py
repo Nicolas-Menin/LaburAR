@@ -9,6 +9,7 @@ from frontend.src.excepciones.api_excepciones import (
 
 # pylint: disable=E1121,E1123,E0401,E1101
 
+
 class RecuperarContrasenaView(ft.View):
 
     def __init__(self):
@@ -17,6 +18,7 @@ class RecuperarContrasenaView(ft.View):
         self.route = "/recuperar-contrasena"
         self.padding = 0
         self.spacing = 0
+        self.enviando = False
 
         self.bg_image = ft.Image(
             src="images/LaburAR_bg1.png",
@@ -48,19 +50,30 @@ class RecuperarContrasenaView(ft.View):
             prefix_icon=ft.Icons.EMAIL_OUTLINED,
             border_radius=10,
             bgcolor=ft.Colors.WHITE,
-            text_style= ft.TextStyle(
-                color= ft.Colors.BLACK
+            text_style=ft.TextStyle(
+                color=ft.Colors.BLACK
             ),
             focused_border_color=ft.Colors.BLUE_500,
         )
 
         self.btn_recuperar = ft.FilledButton(
-            "RECUPERAR CONTRASEÑA",
+            content=ft.Row(
+                controls=[
+                    ft.Text("RECUPERAR CONTRASEÑA"),
+                ],
+                alignment=ft.MainAxisAlignment.CENTER,
+                spacing=10,
+            ),
             style=ft.ButtonStyle(
                 color=ft.Colors.WHITE,
                 bgcolor=ft.Colors.BLUE_500,
                 shape=ft.RoundedRectangleBorder(radius=10),
-                padding=ft.Padding(left=20, top=15, right=20, bottom=15),
+                padding=ft.Padding(
+                    left=20,
+                    top=15,
+                    right=20,
+                    bottom=15,
+                ),
             ),
             width=360,
             on_click=self.enviar_recuperacion,
@@ -70,7 +83,10 @@ class RecuperarContrasenaView(ft.View):
             width=420,
             height=400,
             padding=30,
-            bgcolor=ft.Colors.with_opacity(0.95, ft.Colors.WHITE),
+            bgcolor=ft.Colors.with_opacity(
+                0.95,
+                ft.Colors.WHITE,
+            ),
             border_radius=15,
             border=ft.Border.all(
                 1,
@@ -79,7 +95,10 @@ class RecuperarContrasenaView(ft.View):
             shadow=ft.BoxShadow(
                 spread_radius=1,
                 blur_radius=20,
-                color=ft.Colors.with_opacity(0.12, ft.Colors.BLACK),
+                color=ft.Colors.with_opacity(
+                    0.12,
+                    ft.Colors.BLACK,
+                ),
                 offset=ft.Offset(0, 8),
             ),
             content=ft.Column(
@@ -135,7 +154,10 @@ class RecuperarContrasenaView(ft.View):
         ]
 
     async def enviar_recuperacion(self, e):
-        """Método para procesar el envío del correo de recuperación."""
+        """Envía el correo y evita solicitudes duplicadas."""
+
+        if self.enviando:
+            return
 
         email = (self.txt_email.value or "").strip()
 
@@ -145,54 +167,114 @@ class RecuperarContrasenaView(ft.View):
             )
             return
 
+        self.enviando = True
         self.btn_recuperar.disabled = True
+        self.btn_recuperar.content = ft.Row(
+            controls=[
+                ft.ProgressRing(
+                    width=18,
+                    height=18,
+                    stroke_width=2,
+                    color=ft.Colors.WHITE,
+                ),
+                ft.Text("ENVIANDO CORREO..."),
+            ],
+            alignment=ft.MainAxisAlignment.CENTER,
+            spacing=10,
+        )
         self.page.update()
 
         try:
-
             await AutenticacionService.recuperar_contrasena(
                 page=self.page,
-                email=email
+                email=email,
             )
 
-            self.mostrar_mensaje(
-                "Se han enviado las instrucciones a tu correo electrónico"
-            )
-
-            await asyncio.sleep(2)
-
-            await self.page.push_route("/login")
+            self.mostrar_dialogo_recuperacion_exitosa()
 
         except ErrorNoEncontrado:
-
             self.mostrar_mensaje(
                 "El correo ingresado no se encuentra registrado"
             )
 
         except ErrorAutenticacion:
-
             self.mostrar_mensaje(
                 "No se pudo procesar la solicitud"
             )
 
         except ErrorServidor:
-
             self.mostrar_mensaje(
                 "Error en el servidor. Intente más tarde"
             )
 
         finally:
-
+            self.enviando = False
             self.btn_recuperar.disabled = False
+            self.btn_recuperar.content = ft.Row(
+                controls=[
+                    ft.Text("RECUPERAR CONTRASEÑA"),
+                ],
+                alignment=ft.MainAxisAlignment.CENTER,
+                spacing=10,
+            )
             self.page.update()
 
+    def mostrar_dialogo_recuperacion_exitosa(self):
+        """Muestra la confirmación del envío del correo."""
+
+        self.page.show_dialog(
+            ft.AlertDialog(
+                modal=True,
+                bgcolor=ft.Colors.WHITE,
+                title=ft.Row(
+                    controls=[
+                        ft.Icon(
+                            ft.Icons.CHECK_CIRCLE_OUTLINE,
+                            color=ft.Colors.GREEN_600,
+                            size=28,
+                        ),
+                        ft.Text(
+                            "¡Correo enviado!",
+                            color=ft.Colors.BLUE_GREY_900,
+                        ),
+                    ],
+                    spacing=10,
+                ),
+                content=ft.Text(
+                    "Se envió un correo electrónico con las "
+                    "instrucciones para recuperar tu contraseña.",
+                    color=ft.Colors.BLACK_87,
+                ),
+                actions=[
+                    ft.TextButton(
+                        "ACEPTAR",
+                        style=ft.ButtonStyle(
+                            bgcolor=ft.Colors.BLUE_500,
+                            color=ft.Colors.WHITE,
+                            shape=ft.RoundedRectangleBorder(
+                                radius=10
+                            ),
+                        ),
+                        on_click=self.ir_a_login_desde_dialogo,
+                    )
+                ],
+                actions_alignment=ft.MainAxisAlignment.END,
+            )
+        )
+
+    async def ir_a_login_desde_dialogo(self, e):
+        """Cierra el diálogo y vuelve al inicio de sesión."""
+
+        self.page.pop_dialog()
+        await self.page.push_route("/login")
+
     async def volver(self, e):
-        """Método para volver a la pantalla de inicio de sesión."""
+        """Vuelve a la pantalla de inicio de sesión."""
 
         await self.page.push_route("/login")
 
     def mostrar_mensaje(self, mensaje: str):
-        """Método auxiliar para mostrar notificaciones SnackBar."""
+        """Muestra mensajes de error y validación."""
 
         self.page.show_dialog(
             ft.SnackBar(

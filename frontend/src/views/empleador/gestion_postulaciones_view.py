@@ -1537,11 +1537,83 @@ class GestionPostulantesView(ft.View):
 
             self.mostrar_postulaciones()
 
-            self.mostrar_mensaje(
-                "Postulación aceptada"
-                if nuevo_estado == "ACEPTADA"
-                else "Postulación rechazada"
+            if nuevo_estado == "ACEPTADA":
+                nombre_postulante = (
+                    f"{postulacion.get('nombre_postulante', '')} "
+                    f"{postulacion.get('apellido_postulante', '')}"
+                ).strip()
+
+                titulo_oferta = postulacion.get(
+                    "titulo_oferta",
+                    "la oferta laboral",
+                )
+
+                self.mostrar_dialogo_conexion(
+                    nombre_postulante,
+                    titulo_oferta,
+                )
+            else:
+                self.mostrar_mensaje(
+                    "Postulación rechazada"
+                )
+
+    def mostrar_dialogo_conexion(
+        self,
+        nombre_postulante: str,
+        titulo_oferta: str,
+    ):
+        """Muestra la confirmación de la conexión laboral."""
+
+        async def ir_a_conversaciones(e):
+            self.page.pop_dialog()
+            await self.page.push_route("/mensajes")
+
+        self.page.show_dialog(
+            ft.AlertDialog(
+                modal=True,
+                bgcolor=ft.Colors.WHITE,
+                title=ft.Text(
+                    "¡Conexión laboral creada!",
+                    weight=ft.FontWeight.BOLD,
+                    color=ft.Colors.BLACK,
+                ),
+                content=ft.Column(
+                    tight=True,
+                    spacing=12,
+                    controls=[
+                        ft.Text(
+                            (
+                                f"Ahora estás conectado laboralmente "
+                                f"con {nombre_postulante} para la oferta "
+                                f"{titulo_oferta}."
+                            ),
+                            color=ft.Colors.BLACK_87,
+                        ),
+                        ft.Text(
+                            (
+                                "Podés ir a conversaciones para "
+                                "comunicarte con el postulante y "
+                                "coordinar los próximos pasos."
+                            ),
+                            color=ft.Colors.BLACK_87,
+                        ),
+                    ],
+                ),
+                actions=[
+                    ft.FilledButton(
+                        "IR A CONVERSACIONES",
+                        on_click=ir_a_conversaciones,
+                        style=ft.ButtonStyle(
+                            color=ft.Colors.WHITE,
+                            bgcolor=ft.Colors.BLUE_500,
+                            shape=ft.RoundedRectangleBorder(
+                                radius=10,
+                            ),
+                        ),
+                    ),
+                ],
             )
+        )
 
     async def volver(self, e):
         """Método para volver al perfil personal."""

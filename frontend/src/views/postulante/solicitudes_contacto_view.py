@@ -16,25 +16,25 @@ from frontend.src.excepciones.api_excepciones import (
 class SolicitudesView(ft.View):
 
     ESTADOS = {
-            "ACEPTADA": (
-                "ACEPTADA",
-                ft.Colors.GREEN_700,
-                ft.Colors.GREEN_50,
-                ft.Colors.GREEN_200,
-            ),
-            "PENDIENTE": (
-                "PENDIENTE",
-                ft.Colors.BLUE_700,
-                ft.Colors.BLUE_50,
-                ft.Colors.BLUE_200,
-            ),
-            "RECHAZADA": (
-                "RECHAZADA",
-                ft.Colors.RED_700,
-                ft.Colors.RED_50,
-                ft.Colors.RED_200,
-            ),
-        }
+        "ACEPTADA": (
+            "ACEPTADA",
+            ft.Colors.GREEN_700,
+            ft.Colors.GREEN_50,
+            ft.Colors.GREEN_200,
+        ),
+        "PENDIENTE": (
+            "PENDIENTE",
+            ft.Colors.BLUE_700,
+            ft.Colors.BLUE_50,
+            ft.Colors.BLUE_200,
+        ),
+        "RECHAZADA": (
+            "RECHAZADA",
+            ft.Colors.RED_700,
+            ft.Colors.RED_50,
+            ft.Colors.RED_200,
+        ),
+    }
 
     ANCHO_CONTENIDO = 760
     TAMANO_PAGINA = 10
@@ -60,7 +60,6 @@ class SolicitudesView(ft.View):
             expand=True,
         )
 
-
         self.campo_busqueda = ft.TextField(
             label="Buscar solicitud",
             hint_text="Nombre del empleo o del negocio",
@@ -81,7 +80,7 @@ class SolicitudesView(ft.View):
                 color=ft.Colors.WHITE,
                 bgcolor=ft.Colors.BLUE_500,
                 shape=ft.RoundedRectangleBorder(
-                    radius=15
+                    radius=15,
                 ),
             ),
             on_click=self.buscar,
@@ -231,7 +230,7 @@ class SolicitudesView(ft.View):
         cargando,
         color=ft.Colors.BLUE_500,
     ):
-        """Metodo para mostrar el estado de carga de un boton"""
+        """Muestra el estado de carga de un botón."""
 
         boton.disabled = cargando
 
@@ -252,7 +251,6 @@ class SolicitudesView(ft.View):
                     ),
                 ],
             )
-
         else:
             boton.content = ft.Text(
                 texto_original,
@@ -262,7 +260,7 @@ class SolicitudesView(ft.View):
         self.page.update()
 
     async def cargar(self, page: ft.Page):
-        """Metodo para cargar las solicitudes de contacto del postulante"""
+        """Carga las solicitudes de contacto del postulante."""
 
         self.campo_busqueda.value = ""
         self.busqueda_actual = None
@@ -277,11 +275,7 @@ class SolicitudesView(ft.View):
         page: ft.Page,
         reiniciar: bool,
     ):
-        """Metodo para pedir las solicitudes al backend.
-
-        reiniciar=True empieza de cero.
-        reiniciar=False trae la pagina siguiente.
-        """
+        """Solicita las solicitudes al backend."""
 
         if reiniciar:
             self.offset = 0
@@ -335,7 +329,7 @@ class SolicitudesView(ft.View):
         page.update()
 
     def mostrar_solicitudes(self):
-        """Metodo para mostrar la lista de solicitudes"""
+        """Muestra la lista de solicitudes."""
 
         if not self.solicitudes:
             self.lista_solicitudes.controls = [
@@ -349,7 +343,7 @@ class SolicitudesView(ft.View):
         ]
 
     def crear_indicador_carga(self):
-        """Metodo para mostrar un indicador mientras se cargan los datos"""
+        """Muestra un indicador mientras se cargan los datos."""
 
         return ft.Container(
             width=self.ANCHO_CONTENIDO,
@@ -361,7 +355,7 @@ class SolicitudesView(ft.View):
         )
 
     def crear_mensaje_sin_solicitudes(self):
-        """Metodo para mostrar que no hay solicitudes para mostrar"""
+        """Muestra un mensaje cuando no hay solicitudes."""
 
         return ft.Container(
             width=self.ANCHO_CONTENIDO,
@@ -393,7 +387,7 @@ class SolicitudesView(ft.View):
         )
 
     def crear_chip_estado(self, estado: str):
-        """Metodo para crear el chip de estado de la solicitud"""
+        """Crea el chip de estado de una solicitud."""
 
         texto, color_texto, color_fondo, color_borde = self.ESTADOS.get(
             estado,
@@ -428,7 +422,7 @@ class SolicitudesView(ft.View):
 
     @staticmethod
     def formatear_fecha(fecha) -> str:
-        """Metodo para formatear la fecha de solicitud"""
+        """Formatea la fecha de solicitud."""
 
         if not fecha:
             return "Sin fecha"
@@ -443,7 +437,7 @@ class SolicitudesView(ft.View):
 
     @staticmethod
     def obtener_fecha(solicitud: dict):
-        """Metodo para obtener la fecha de la solicitud"""
+        """Obtiene la fecha de la solicitud."""
 
         return (
             solicitud.get("fecha_solicitud")
@@ -452,7 +446,7 @@ class SolicitudesView(ft.View):
         )
 
     def crear_botones_solicitud(self, solicitud: dict):
-        """Metodo para crear los botones de accion de una solicitud"""
+        """Crea los botones de acción de una solicitud."""
 
         boton_ver_perfil = ft.OutlinedButton(
             content=ft.Text(
@@ -528,7 +522,7 @@ class SolicitudesView(ft.View):
         )
 
     def crear_card_solicitud(self, solicitud: dict):
-        """Metodo para crear una card de solicitud de contacto"""
+        """Crea una tarjeta de solicitud de contacto."""
 
         avatar = ft.CircleAvatar(
             radius=30,
@@ -616,7 +610,7 @@ class SolicitudesView(ft.View):
         )
 
     async def buscar(self, e):
-        """Metodo para buscar solicitudes por el texto ingresado"""
+        """Busca solicitudes por el texto ingresado."""
 
         texto = (self.campo_busqueda.value or "").strip()
 
@@ -630,7 +624,7 @@ class SolicitudesView(ft.View):
         self.update()
 
     async def ver_mas(self, e):
-        """Metodo para traer la pagina siguiente de solicitudes"""
+        """Trae la página siguiente de solicitudes."""
 
         boton = e.control
 
@@ -664,7 +658,7 @@ class SolicitudesView(ft.View):
         self.update()
 
     async def ver_perfil_empleador(self, e):
-        """Metodo para navegar al perfil del empleador"""
+        """Navega al perfil del empleador."""
 
         boton = e.control
         solicitud = boton.data
@@ -697,7 +691,7 @@ class SolicitudesView(ft.View):
             )
 
     def confirmar_aceptar(self, e):
-        """Metodo para mostrar la confirmacion de aceptar"""
+        """Muestra la confirmación para aceptar."""
 
         self.mostrar_confirmacion(
             solicitud=e.control.data,
@@ -705,7 +699,7 @@ class SolicitudesView(ft.View):
         )
 
     def confirmar_rechazar(self, e):
-        """Metodo para mostrar la confirmacion de rechazar"""
+        """Muestra la confirmación para rechazar."""
 
         self.mostrar_confirmacion(
             solicitud=e.control.data,
@@ -717,7 +711,7 @@ class SolicitudesView(ft.View):
         solicitud: dict,
         estado: str,
     ):
-        """Metodo para confirmar la respuesta a una solicitud"""
+        """Muestra la confirmación de respuesta a una solicitud."""
 
         nombre_empleador = solicitud.get(
             "nombre_empleador",
@@ -835,7 +829,7 @@ class SolicitudesView(ft.View):
         solicitud: dict,
         estado: str,
     ):
-        """Metodo para aceptar o rechazar una solicitud"""
+        """Acepta o rechaza una solicitud de contacto."""
 
         try:
             await PostulanteService.actualizar_conexion_laboral(
@@ -852,11 +846,12 @@ class SolicitudesView(ft.View):
 
             self.update()
 
-            self.mostrar_mensaje(
-                "Contacto aceptado correctamente"
-                if estado == "ACEPTADA"
-                else "Solicitud rechazada correctamente"
-            )
+            if estado == "ACEPTADA":
+                self.mostrar_dialogo_conexion_aceptada(solicitud)
+            else:
+                self.mostrar_mensaje(
+                    "Solicitud rechazada correctamente"
+                )
 
         except ErrorAutenticacion:
             self.page.pop_dialog()
@@ -876,15 +871,77 @@ class SolicitudesView(ft.View):
                 "No se pudo responder la solicitud. Intente nuevamente"
             )
 
+    def mostrar_dialogo_conexion_aceptada(self, solicitud: dict):
+        """Muestra la confirmación de conexión laboral creada."""
+
+        empresa = solicitud.get(
+            "nombre_empleador",
+            "la empresa",
+        )
+
+        puesto = solicitud.get(
+            "nombre_oferta",
+            "la oferta publicada",
+        )
+
+        self.page.show_dialog(
+            ft.AlertDialog(
+                modal=True,
+                bgcolor=ft.Colors.WHITE,
+                title=ft.Row(
+                    spacing=10,
+                    controls=[
+                        ft.Icon(
+                            ft.Icons.CHECK_CIRCLE_OUTLINE,
+                            color=ft.Colors.GREEN_600,
+                            size=30,
+                        ),
+                        ft.Text(
+                            "¡Conexión laboral creada!",
+                            color=ft.Colors.BLACK_87,
+                            weight=ft.FontWeight.BOLD,
+                        ),
+                    ],
+                ),
+                content=ft.Text(
+                    f"Ahora tenés una conexión laboral con "
+                    f"{empresa} para el puesto de {puesto}.\n\n"
+                    "Entrá a tus conversaciones para hablar con "
+                    "la empresa sobre la oferta, las tareas y "
+                    "la modalidad de trabajo.",
+                    color=ft.Colors.BLACK_87,
+                ),
+                actions=[
+                    ft.Button(
+                        "IR A CONVERSACIONES",
+                        color=ft.Colors.WHITE,
+                        bgcolor=ft.Colors.BLUE_500,
+                        on_click=self.ir_a_conversaciones,
+                        style=ft.ButtonStyle(
+                            shape=ft.RoundedRectangleBorder(
+                                radius=10,
+                            ),
+                        ),
+                    ),
+                ],
+            )
+        )
+
+    async def ir_a_conversaciones(self, e):
+        """Navega a las conversaciones del postulante."""
+
+        self.page.pop_dialog()
+        await self.page.push_route("/mensajes")
+
     async def volver(self, e):
-        """Metodo para volver a la pantalla anterior"""
+        """Vuelve a la pantalla anterior."""
 
         await self.page.push_route(
             "/perfil-personal-postulante"
         )
 
     def mostrar_mensaje(self, mensaje):
-        """Metodo para mostrar mensajes"""
+        """Muestra mensajes informativos."""
 
         self.page.show_dialog(
             ft.SnackBar(
@@ -893,7 +950,7 @@ class SolicitudesView(ft.View):
         )
 
     def mostrar_dialogo_sesion_expirada(self):
-        """Metodo para mostrar el dialogo de sesion expirada"""
+        """Muestra el diálogo de sesión expirada."""
 
         self.page.show_dialog(
             ft.AlertDialog(
