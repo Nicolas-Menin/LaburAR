@@ -226,7 +226,8 @@ class EmpleadorService:
         rubro: str | None = None,
         estado: Literal[
             "ACTIVA",
-            "PAUSADA"
+            "PAUSADA",
+            "CERRADA"
         ] | None = None,
         salario_tipo: Literal[
             "FIJO",
