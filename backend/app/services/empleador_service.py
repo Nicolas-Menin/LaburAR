@@ -246,4 +246,11 @@ class EmpleadorService:
         if datos.hora_fin is not None:
             oferta_laboral.hora_fin = datos.hora_fin
 
+        if datos.turno is not None:
+            oferta_laboral.turno = datos.turno
+
+        if datos.jornada is not None:
+            oferta_laboral.jornada = datos.jornada
+
+
         return self.oferta_laboral_dao.actualizar_oferta(oferta_laboral)
