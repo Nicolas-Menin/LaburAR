@@ -50,5 +50,5 @@ class MensajeService:
         mensajes = self.mensaje_dao.existe_mensajes_no_leidos(usuario_id)
 
         return {
-            "cantidad_mensajes_no_leidos": len(mensajes),
+            "cantidad_mensajes_no_leidos": mensajes,
         }
