@@ -105,3 +105,62 @@ class Sesion:
             return None
 
         return payload.get("user")
+
+    @staticmethod
+    async def persistir(page: ft.Page):
+        """Metodo para copiar la sesion actual al almacenamiento del navegador"""
+
+        prefs = ft.SharedPreferences()
+
+        await prefs.set(
+            "token",
+            page.session.store.get("token")
+        )
+
+        await prefs.set(
+            "rol",
+            page.session.store.get("rol")
+        )
+
+        await prefs.set(
+            "exp",
+            page.session.store.get("exp")
+        )
+
+    @staticmethod
+    async def restaurar(page: ft.Page) -> bool:
+        """Metodo para cargar en esta pestaña la sesion guardada en el navegador"""
+
+        if page.session.store.get("token"):
+            return True
+
+        prefs = ft.SharedPreferences()
+
+        token = await prefs.get("token")
+        rol = await prefs.get("rol")
+        exp = await prefs.get("exp")
+
+        if not (token and rol and exp):
+            return False
+
+        page.session.store.set("token", token)
+        page.session.store.set("rol", rol)
+        page.session.store.set("exp", exp)
+
+        if Sesion.token_vencido(page):
+            await Sesion.cerrar_async(page)
+            return False
+
+        return True
+
+    @staticmethod
+    async def cerrar_async(page: ft.Page):
+        """Metodo para cerrar la sesion en esta pestaña y en el navegador"""
+
+        Sesion.cerrar(page)
+
+        prefs = ft.SharedPreferences()
+
+        await prefs.remove("token")
+        await prefs.remove("rol")
+        await prefs.remove("exp")

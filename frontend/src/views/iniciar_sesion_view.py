@@ -649,6 +649,8 @@ class IniciarSesionView(ft.View):
                 contrasena=self.contrasena.value,
             )
 
+            await Sesion.persistir(self.page)
+
             self._vaciar_campos()
             rol = self.__obtener_rol()
 

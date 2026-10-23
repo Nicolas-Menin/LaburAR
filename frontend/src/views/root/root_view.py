@@ -133,7 +133,12 @@ class RootView:
         route = view.route.split("?")[0]
 
         if route == "/":
-            await self.page.push_route("/login")
+            if await Sesion.restaurar(self.page):
+                if Sesion.rol(self.page) == "ADMINISTRADOR":
+                    await self.page.push_route("/perfil-personal-administrador")
+                await self.page.push_route("/busqueda")
+            else:
+                await self.page.push_route("/login")
             return
 
         if route != "/busqueda":
@@ -145,10 +150,12 @@ class RootView:
         self.page.views.clear()
 
         if route not in self.RUTAS_PUBLICAS:
+            await Sesion.restaurar(self.page)
+
             token = Sesion.token(self.page)
 
             if token is None or Sesion.token_vencido(self.page):
-                Sesion.cerrar(self.page)
+                await Sesion.cerrar_async(self.page)
                 self.mostrar_dialogo_sesion_expirada()
                 await self.page.push_route("/login")
                 return

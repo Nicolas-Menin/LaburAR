@@ -686,9 +686,7 @@ class PerfilPersonalPostulanteView(ft.View):
         self.page.update()
 
         try:
-            Sesion.cerrar(
-                self.page
-            )
+            await Sesion.cerrar_async(self.page)
 
             await self.page.push_route(
                 "/login"
