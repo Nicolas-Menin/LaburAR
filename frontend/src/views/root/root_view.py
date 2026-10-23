@@ -37,6 +37,8 @@ class RootView:
         self.page.padding = 0
         self.page.spacing = 0
 
+        self.primera_carga_pendiente = True
+
         self.page.on_route_change = self.route_change
         self.page.on_resize = self.handle_size
         self.page.on_disconnect = self._pagina_desconectada
@@ -134,8 +136,7 @@ class RootView:
 
         if route == "/":
             if await Sesion.restaurar(self.page):
-                if Sesion.rol(self.page) == "ADMINISTRADOR":
-                    await self.page.push_route("/perfil-personal-administrador")
+
                 await self.page.push_route("/busqueda")
             else:
                 await self.page.push_route("/login")
@@ -187,6 +188,7 @@ class RootView:
 
 
 
+
         if route == "/reporte":
             usuario_reportado_id = self.obtener_usuario_reportado(view)
 
@@ -207,6 +209,34 @@ class RootView:
 
         self.page.update()
         self.handle_size(None)
+
+
+        if self.primera_carga_pendiente:
+            self.primera_carga_pendiente = False
+
+        cargas = {
+            "/perfil-personal-postulante":
+                lambda: self.perfil_personal_postulante.cargar(self.page),
+            "/perfil-personal-empleador":
+                lambda: self.perfil_personal_empleador.cargar(self.page),
+            "/editar-perfil-postulante":
+                lambda: self.editar_perfil_postulante.cargar(self.page),
+            "/editar-perfil-empleador":
+                lambda: self.editar_perfil_empleador.cargar(self.page),
+            "/postulaciones":
+                lambda: self.postulaciones.cargar(self.page),
+            "/solicitudes":
+                lambda: self.solicitudes.cargar(self.page),
+            "/gestion-solicitudes":
+                lambda: self.gestion_solicitudes.cargar(self.page),
+            "/gestion-postulantes":
+                lambda: self.gestion_postulantes.cargar(self.page),
+            "/gestion-ofertas":
+                lambda: self.gestion_ofertas.cargar(self.page),
+        }
+
+        if route in cargas:
+            await cargas[route]()
 
     def handle_size(self, _):
         """Maneja el tamaño de la imagen de fondo"""
