@@ -443,6 +443,14 @@ class MensajeriaView(ft.View):
                     self.ordenar_conversaciones()
                     self.mostrar_conversaciones()
 
+                    # Solo al entrar a la vista, no en cada chequeo de 60s
+                    if (
+                        carga_inicial
+                        and not self.conversaciones
+                        and self.oferta_filtro_id is None
+                    ):
+                        self.mostrar_dialogo_sin_conversaciones()
+
                 carga_inicial = False
                 await asyncio.sleep(60)
 
@@ -516,6 +524,12 @@ class MensajeriaView(ft.View):
 
             self.ordenar_conversaciones()
             self.mostrar_conversaciones()
+
+            if (
+                not self.conversaciones
+                and self.oferta_filtro_id is None
+            ):
+                self.mostrar_dialogo_sin_conversaciones()
 
         except ErrorAutenticacion:
             self.mostrar_dialogo_sesion_expirada()
@@ -1528,6 +1542,42 @@ class MensajeriaView(ft.View):
         self.page.show_dialog(
             ft.SnackBar(
                 content=ft.Text(mensaje)
+            )
+        )
+
+    def mostrar_dialogo_sin_conversaciones(self):
+        """Avisa que para conversar tiene que existir una conexion laboral."""
+
+        otra_parte = (
+            "un postulante"
+            if Sesion.rol(self.page) == "EMPLEADOR"
+            else "un empleador"
+        )
+
+        self.page.show_dialog(
+            ft.AlertDialog(
+                modal=True,
+                bgcolor=ft.Colors.WHITE,
+                title=ft.Text(
+                    "Todavía no tenés conversaciones",
+                    weight=ft.FontWeight.BOLD,
+                    color=ft.Colors.BLACK_87,
+                ),
+                content=ft.Text(
+                    "Para tener una conversación primero tiene que "
+                    f"existir una conexión laboral con {otra_parte}. "
+                    "Cuando haya una, la conversación va a aparecer acá.",
+                    color=ft.Colors.BLACK_87,
+                ),
+                actions=[
+                    ft.TextButton(
+                        "ENTENDIDO",
+                        style=ft.ButtonStyle(
+                            color=ft.Colors.BLUE_500,
+                        ),
+                        on_click=lambda e: self.page.pop_dialog(),
+                    )
+                ],
             )
         )
 
