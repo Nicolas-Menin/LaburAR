@@ -4,6 +4,7 @@ from backend.app.models.conexion_laboral import ConexionLaboral
 from backend.app.models.postulante import Postulante
 from backend.app.models.empleador import Empleador
 from backend.app.models.oferta_laboral import OfertaLaboral
+from backend.app.models.usuario import Usuario
 
 class ConexionLaboralDAO:
     """Clase encargada del acceso a los datos de conexion laboral"""
@@ -56,7 +57,13 @@ class ConexionLaboralDAO:
                 OfertaLaboral,
                 ConexionLaboral.oferta_id == OfertaLaboral.id
             )
+            .join(
+                Usuario,
+                Empleador.usuario_id == Usuario.id
+            )
             .filter(ConexionLaboral.postulante_id == id_postulante)
+            .filter(OfertaLaboral.estado == "ACTIVA")
+            .filter(Usuario.estado == "ACTIVO")
         )
 
         if busqueda:
@@ -64,7 +71,16 @@ class ConexionLaboralDAO:
                 OfertaLaboral.titulo.ilike(f"%{busqueda}%")
             )
 
-        return query.offset(offset).limit(limit).all()
+        return (
+            query
+            .order_by(
+                ConexionLaboral.fecha_conexion.desc(),
+                ConexionLaboral.id.desc()
+            )
+            .offset(offset)
+            .limit(limit)
+            .all()
+        )
 
     def listar_conexiones_laborales_empleador(
         self,
@@ -96,7 +112,12 @@ class ConexionLaboralDAO:
                 OfertaLaboral,
                 ConexionLaboral.oferta_id == OfertaLaboral.id
             )
+            .join(
+                Usuario,
+                Postulante.usuario_id == Usuario.id
+            )
             .filter(ConexionLaboral.empleador_id == id_empleador)
+            .filter(Usuario.estado == "ACTIVO")
         )
 
         if busqueda:
@@ -106,13 +127,22 @@ class ConexionLaboralDAO:
                     Postulante.apellido.ilike(f"%{busqueda}%")
                 )
             )
-        print(oferta_id)
+
         if oferta_id is not None:
             query = query.filter(
                 ConexionLaboral.oferta_id == oferta_id
             )
 
-        return query.offset(offset).limit(limit).all()
+        return (
+            query
+            .order_by(
+                ConexionLaboral.fecha_conexion.desc(),
+                ConexionLaboral.id.desc()
+            )
+            .offset(offset)
+            .limit(limit)
+            .all()
+        )
 
 
     def buscar_por_id(self,conexion_laboral_id:int):
