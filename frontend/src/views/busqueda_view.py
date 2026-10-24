@@ -323,6 +323,17 @@ class BusquedaView(ft.View):
                                     color=ft.Colors.BLUE_500
                                 ),
                                 on_click=self.cancelar_panel
+                            ),
+                            ft.OutlinedButton(
+                                "Quitar filtros",
+                                style=ft.ButtonStyle(
+                                    color=ft.Colors.RED_500,
+                                    side=ft.BorderSide(
+                                        1,
+                                        ft.Colors.RED_500
+                                    )
+                                ),
+                                on_click=self.quitar_filtros
                             )
                         ]
                     )
@@ -1303,6 +1314,27 @@ class BusquedaView(ft.View):
 
         self.filtros_aplicados = (
             self.obtener_filtros()
+        )
+
+        asyncio.create_task(
+            self.cerrar_panel(e)
+        )
+
+        asyncio.create_task(
+            self.buscar(e)
+        )
+
+    def quitar_filtros(self, e):
+        """Metodo para quitar todos los filtros y repetir la busqueda"""
+
+        tipo = self.perfil.value
+
+        self.filtros_aplicados = {
+            "perfil": tipo
+        }
+
+        self.restaurar_filtros(
+            self.filtros_aplicados
         )
 
         asyncio.create_task(
