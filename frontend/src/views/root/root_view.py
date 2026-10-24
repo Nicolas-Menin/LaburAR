@@ -142,6 +142,9 @@ class RootView:
                 await self.page.push_route("/login")
             return
 
+        es_primera_carga = self.primera_carga_pendiente
+        self.primera_carga_pendiente = False
+
         if route != "/busqueda":
             self.busqueda.detener_verificacion_mensajes()
 
@@ -186,9 +189,6 @@ class RootView:
             "/gestion-reportes": self.gestion_reportes
         }
 
-
-
-
         if route == "/reporte":
             usuario_reportado_id = self.obtener_usuario_reportado(view)
 
@@ -210,33 +210,42 @@ class RootView:
         self.page.update()
         self.handle_size(None)
 
+        if es_primera_carga:
+            cargas = {
+                "/perfil-personal-postulante":
+                    lambda: self.perfil_personal_postulante.cargar(self.page),
+                "/perfil-personal-empleador":
+                    lambda: self.perfil_personal_empleador.cargar(self.page),
+                "/editar-perfil-postulante":
+                    lambda: self.editar_perfil_postulante.cargar(self.page),
+                "/editar-perfil-empleador":
+                    lambda: self.editar_perfil_empleador.cargar(self.page),
+                "/postulaciones":
+                    lambda: self.postulaciones.cargar(self.page),
+                "/solicitudes":
+                    lambda: self.solicitudes.cargar(self.page),
+                "/gestion-solicitudes":
+                    lambda: self.gestion_solicitudes.cargar(self.page),
+                "/gestion-postulantes":
+                    lambda: self.gestion_postulantes.cargar(self.page),
+                "/gestion-ofertas":
+                    lambda: self.gestion_ofertas.cargar(self.page),
+            }
 
-        if self.primera_carga_pendiente:
-            self.primera_carga_pendiente = False
+            if route in cargas:
+                await cargas[route]()
 
-        cargas = {
-            "/perfil-personal-postulante":
-                lambda: self.perfil_personal_postulante.cargar(self.page),
-            "/perfil-personal-empleador":
-                lambda: self.perfil_personal_empleador.cargar(self.page),
-            "/editar-perfil-postulante":
-                lambda: self.editar_perfil_postulante.cargar(self.page),
-            "/editar-perfil-empleador":
-                lambda: self.editar_perfil_empleador.cargar(self.page),
-            "/postulaciones":
-                lambda: self.postulaciones.cargar(self.page),
-            "/solicitudes":
-                lambda: self.solicitudes.cargar(self.page),
-            "/gestion-solicitudes":
-                lambda: self.gestion_solicitudes.cargar(self.page),
-            "/gestion-postulantes":
-                lambda: self.gestion_postulantes.cargar(self.page),
-            "/gestion-ofertas":
-                lambda: self.gestion_ofertas.cargar(self.page),
-        }
+        if (
+            route == "/perfil-personal-postulante"
+            and self.perfil_personal_postulante.postulante_id is None
+        ):
+            await self.perfil_personal_postulante.cargar(self.page)
 
-        if route in cargas:
-            await cargas[route]()
+        elif (
+            route == "/perfil-personal-empleador"
+            and self.perfil_personal_empleador.empleador_id is None
+        ):
+            await self.perfil_personal_empleador.cargar(self.page)
 
     def handle_size(self, _):
         """Maneja el tamaño de la imagen de fondo"""
