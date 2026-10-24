@@ -128,3 +128,15 @@ class AutenticacionService:
             f"/autenticacion/restablecer-contraseña?token={token}",
             datos
         )
+
+    @staticmethod
+    async def desactivar_usuario(
+        page: ft.Page,
+    ):
+        """Metodo para que el usuario pueda desactivar su cuenta"""
+
+
+        return await ApiService.put(
+            page,
+            endpoint="/autenticacion/desactivar-usuario"
+        )

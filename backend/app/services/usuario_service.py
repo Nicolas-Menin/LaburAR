@@ -181,3 +181,15 @@ class UsuarioService:
 
 
         return self.usuario_dao.actualizar_usuario(usuario)
+
+    def desactivar_usuario(self,usuario_id: int):
+        """Metodo para que el usuario pueda desactivar su cuenta"""
+
+        usuario = self.usuario_dao.buscar_por_id(usuario_id)
+
+        if not usuario:
+            raise HTTPException(404,"Usuario no encontrado")
+
+        usuario.estado = "DESACTIVADO"
+
+        return self.usuario_dao.actualizar_usuario(usuario)

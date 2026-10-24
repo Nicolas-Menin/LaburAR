@@ -2,6 +2,7 @@ import asyncio
 import flet as ft
 
 from frontend.src.services.postulante_service import PostulanteService
+from frontend.src.services.autenticacion_service import AutenticacionService
 from frontend.src.excepciones.api_excepciones import (
     ErrorServidor,
     ErrorAutenticacion
@@ -47,6 +48,7 @@ class PerfilPersonalPostulanteView(ft.View):
         self.cargando_postulaciones = False
         self.cargando_solicitudes = False
         self.cargando_cierre_sesion = False
+        self.cargando_desactivacion = False
 
         self.foto_perfil = ft.CircleAvatar(
             radius=60,
@@ -150,6 +152,27 @@ class PerfilPersonalPostulanteView(ft.View):
             on_click=self.cerrar_sesion,
         )
 
+        self.btn_desactivar_cuenta = ft.OutlinedButton(
+            "Desactivar cuenta",
+            icon=ft.Icons.PERSON_OFF_OUTLINED,
+            icon_color=ft.Colors.RED_600,
+            style=ft.ButtonStyle(
+                color=ft.Colors.RED_600,
+                bgcolor=ft.Colors.with_opacity(
+                    0.9,
+                    ft.Colors.WHITE
+                ),
+                side=ft.BorderSide(
+                    1,
+                    ft.Colors.RED_600,
+                ),
+                shape=ft.RoundedRectangleBorder(
+                    radius=10,
+                ),
+            ),
+            on_click=self.desactivar_cuenta,
+        )
+
         self.tarjeta_central = ft.Container(
             width=450,
             height=610,
@@ -223,6 +246,11 @@ class PerfilPersonalPostulanteView(ft.View):
                             tooltip="Volver",
                             on_click=self.volver,
                         ),
+                    ),
+                    ft.Container(
+                        right=20,
+                        bottom=20,
+                        content=self.btn_desactivar_cuenta,
                     ),
                 ],
             )
@@ -700,6 +728,109 @@ class PerfilPersonalPostulanteView(ft.View):
 
             if self.btn_cerrar_sesion.page is not None:
                 self.btn_cerrar_sesion.page.update()
+
+    async def desactivar_cuenta(self, e):
+        """Muestra el diálogo de confirmación para desactivar la cuenta."""
+
+        if self.cargando_desactivacion:
+            return
+
+        self.page.show_dialog(
+            ft.AlertDialog(
+                modal=True,
+                bgcolor=ft.Colors.WHITE,
+                title=ft.Text(
+                    "Desactivar cuenta",
+                    color=ft.Colors.BLACK_87,
+                    weight=ft.FontWeight.BOLD,
+                ),
+                content=ft.Text(
+                    "Si desactivás tu cuenta vas a cerrar sesión y "
+                    "no vas a poder volver a ingresar. ¿Estás seguro "
+                    "de que querés continuar?",
+                    color=ft.Colors.BLACK_87,
+                ),
+                actions=[
+                    ft.TextButton(
+                        "Cancelar",
+                        on_click=lambda e: self.page.pop_dialog(),
+                    ),
+                    ft.Button(
+                        "Desactivar cuenta",
+                        icon=ft.Icons.PERSON_OFF_OUTLINED,
+                        icon_color=ft.Colors.RED_600,
+                        color=ft.Colors.RED_600,
+                        bgcolor=ft.Colors.RED_50,
+                        style=ft.ButtonStyle(
+                            shape=ft.RoundedRectangleBorder(
+                                radius=8,
+                            ),
+                        ),
+                        on_click=self.confirmar_desactivacion,
+                    ),
+                ],
+            )
+        )
+
+        self.page.update()
+
+    async def confirmar_desactivacion(self, e):
+        """Desactiva definitivamente la cuenta del usuario logueado."""
+
+        if self.cargando_desactivacion:
+            return
+
+        self.cargando_desactivacion = True
+
+        self.page.pop_dialog()
+
+        self.btn_desactivar_cuenta.disabled = True
+        self.btn_desactivar_cuenta.content = self._contenido_cargando(
+            "Desactivando cuenta..."
+        )
+
+        self.page.update()
+
+        try:
+            await AutenticacionService.desactivar_usuario(
+                page=self.page
+            )
+
+            await Sesion.cerrar_async(self.page)
+
+            await self.page.push_route(
+                "/login"
+            )
+
+            self.mostrar_mensaje(
+                "Tu cuenta fue desactivada"
+            )
+
+        except ErrorAutenticacion:
+            self.mostrar_dialogo_sesion_expirada()
+
+            await asyncio.sleep(5)
+
+            await self.page.push_route(
+                "/login"
+            )
+
+        except ErrorServidor:
+            self.mostrar_mensaje(
+                "No se pudo desactivar la cuenta. Intente nuevamente."
+            )
+
+        finally:
+            self.cargando_desactivacion = False
+
+            self.btn_desactivar_cuenta.disabled = False
+            self.btn_desactivar_cuenta.content = ft.Text(
+                "Desactivar cuenta",
+                color=ft.Colors.RED_600,
+            )
+
+            if self.btn_desactivar_cuenta.page is not None:
+                self.btn_desactivar_cuenta.page.update()
 
     async def volver(self, e):
         """Método para volver a la búsqueda."""

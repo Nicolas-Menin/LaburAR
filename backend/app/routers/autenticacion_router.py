@@ -4,6 +4,8 @@ from backend.app.schemas.empleador_schemas import RegistroEmpleador
 from backend.app.services.usuario_service import UsuarioService
 from backend.app.schemas.usuario_schemas import UsuarioLogin, UsuarioEmail,TokenResponse, PasswordUpdate
 from backend.app.dependencies.usuario import obtener_usuario_service
+from backend.app.core.security import oauth2_scheme
+
 #ROUTER DE AUTENTICACION
 autenticacion_router = APIRouter(prefix="/autenticacion",tags=["Autenticacion"])
 
@@ -63,3 +65,14 @@ async def restablecer_contrasena(
         usuario_id=usuario_id,
         nueva_contrasena=datos.nueva_contrasena
     )
+
+@autenticacion_router.put("/desactivar-usuario")
+async def desactivar_usuario(
+    token: str = Depends(oauth2_scheme),
+    usuario_service: UsuarioService = Depends(obtener_usuario_service)
+):
+    """Metodo para que el usuario pueda desactivar su cuenta"""
+
+    usuario_id = usuario_service.obtener_usuario_id(token)
+
+    return usuario_service.desactivar_usuario(usuario_id)
